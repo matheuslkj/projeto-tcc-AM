@@ -45,7 +45,8 @@ class PacienteController extends Controller
             'complemento' => 'nullable|string',
         ]);
 
-        // Criação do paciente
+        $validated['cpf'] = preg_replace('/\D/', '', $validated['cpf']);
+
         $paciente = Paciente::create($validated);
 
         return response()->json($paciente, 201);
