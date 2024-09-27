@@ -1,7 +1,8 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import Home from './components/Home';
+// import Home from './pages/Home';
 import RegistrarPaciente from './pages/RegistroPaciente'; 
 
 const App = () => {
