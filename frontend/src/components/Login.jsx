@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Ícones para mostrar/esconder senha
 
 const Login = () => {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false); // Estado para alternar visibilidade da senha
+  const [manterConectado, setManterConectado] = useState(false); // Estado para o checkbox "manter conectado"
   const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
     // Redireciona para a URL completa da listagem de pacientes
     window.location.href = 'http://localhost:5173/';
+  };
+
+  const toggleMostrarSenha = () => {
+    setMostrarSenha(!mostrarSenha);
   };
 
   return (
@@ -32,12 +39,12 @@ const Login = () => {
               required
             />
           </div>
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="senha">
               Senha
             </label>
             <input
-              type="password"
+              type={mostrarSenha ? 'text' : 'password'} // Muda o tipo de input com base no estado
               id="senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
@@ -45,13 +52,38 @@ const Login = () => {
               placeholder="Digite sua senha"
               required
             />
+            {/* Ícone de olho para mostrar/esconder senha */}
+            <span 
+              className="absolute inset-y-0 right-0 flex items-center px-2 cursor-pointer mt-6"
+              onClick={toggleMostrarSenha}
+            >
+              {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+            </span>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="mb-4">
+            <label className="inline-flex items-center">
+              <input 
+                type="checkbox" 
+                className="form-checkbox" 
+                checked={manterConectado}
+                onChange={(e) => setManterConectado(e.target.checked)}
+              />
+              <span className="ml-2 text-gray-700">Manter conectado</span>
+            </label>
+          </div>
+          <div className="flex flex-col items-center justify-between">
             <button
               type="submit"
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-4"
             >
               Entrar
+            </button>
+            <button
+              type="button"
+              className="text-blue-500 hover:text-blue-700 font-semibold"
+              onClick={() => alert('Função de recuperação de senha ainda não implementada.')}
+            >
+              Esqueci minha senha
             </button>
           </div>
         </form>
