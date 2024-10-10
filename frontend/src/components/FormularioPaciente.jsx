@@ -46,7 +46,7 @@ const FormularioPaciente = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Remover a formatação do CPF e telefone antes de enviar
     const dadosParaEnviar = {
       ...dadosFormulario,
@@ -80,7 +80,7 @@ const FormularioPaciente = ({ onSubmit }) => {
       <h2 className="text-2xl font-bold mb-6">Cadastro de Paciente</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {Object.entries(dadosFormulario).map(([key, value]) => (
-          key !== "genero" && ( 
+          key !== "genero" && (
             <div key={key} className="form-group">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor={key}>
                 {key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, " ")}
@@ -121,25 +121,26 @@ const FormularioPaciente = ({ onSubmit }) => {
             <option value="">Selecione</option>
             <option value="Masculino">Masculino</option>
             <option value="Feminino">Feminino</option>
-            <option value="Outros">Outros</option>
+            <option value="Outros">Prefiro não dizer</option>
           </select>
         </div>
       </div>
-      <div className="flex justify-between mt-6">
-        <button
-          type="submit"
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-        >
-          Cadastrar
-        </button>
+      <div className="mt-4 flex justify-end space-x-4">
         <button
           type="button"
           onClick={() => window.location.reload()}
-          className="bg-gray-400 hover:bg-gray-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          className="w-30 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600"
         >
           Cancelar
         </button>
+        <button
+          type="submit"
+          className="w-30 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+        >
+          Cadastrar
+        </button>
       </div>
+
     </form>
   );
 };

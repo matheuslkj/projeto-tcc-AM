@@ -21,7 +21,6 @@ const Navbar = () => {
         {/* Opções normais */}
         <div className="space-x-4 hidden md:flex">
           <Link to="/" className="text-white hover:text-blue-300">Home</Link>
-          <Link to="/register_patient" className="text-white hover:text-blue-300">Cadastro Paciente</Link>
           <div className="text-white hover:text-blue-300 cursor-pointer">Perfil</div>
         </div>
       </nav>
