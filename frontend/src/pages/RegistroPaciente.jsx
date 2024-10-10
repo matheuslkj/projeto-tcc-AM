@@ -1,5 +1,5 @@
 import React from 'react';
-import PatientForm from '../components/PacienteForm';
+// import PatientForm from '../components/FormularioPaciente';
 
 const RegistrarPaciente = () => {
   const handleFormSubmit = async (data) => {
