@@ -45,7 +45,7 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/home" className="text-lg hover:underline" onClick={toggleSidebar}>
+            <Link to="/" className="text-lg hover:underline" onClick={toggleSidebar}>
               Início
             </Link>
           </li>

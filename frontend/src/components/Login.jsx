@@ -5,14 +5,47 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Ícones para mostrar/esco
 const Login = () => {
   const [cpf, setCpf] = useState('');
   const [senha, setSenha] = useState('');
-  const [mostrarSenha, setMostrarSenha] = useState(false); // Estado para alternar visibilidade da senha
-  const [manterConectado, setManterConectado] = useState(false); // Estado para o checkbox "manter conectado"
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+  const [manterConectado, setManterConectado] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Redireciona para a URL completa da listagem de pacientes
-    window.location.href = 'http://localhost:5173/';
+
+    try {
+      // Enviando CPF e senha para o backend
+      const response = await fetch('http://localhost:8000/api/v1/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          cpf: cpf,
+          password: senha,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const token = data.token;
+
+        // Armazenar o token no localStorage (ou sessionStorage)
+        if (manterConectado) {
+          localStorage.setItem('token', token);
+        } else {
+          sessionStorage.setItem('token', token);
+        }
+
+        // Redireciona para a página de listagem de pacientes após o login
+        navigate('/');
+      } else {
+        // Tratar erro de login
+        alert('Erro ao fazer login. Verifique suas credenciais.');
+      }
+    } catch (error) {
+      console.error('Erro durante o login:', error);
+      alert('Erro de conexão com o servidor.');
+    }
   };
 
   const toggleMostrarSenha = () => {
@@ -44,7 +77,7 @@ const Login = () => {
               Senha
             </label>
             <input
-              type={mostrarSenha ? 'text' : 'password'} // Muda o tipo de input com base no estado
+              type={mostrarSenha ? 'text' : 'password'}
               id="senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
@@ -52,7 +85,6 @@ const Login = () => {
               placeholder="Digite sua senha"
               required
             />
-            {/* Ícone de olho para mostrar/esconder senha */}
             <span 
               className="absolute inset-y-0 right-0 flex items-center px-2 cursor-pointer mt-6"
               onClick={toggleMostrarSenha}
@@ -81,7 +113,7 @@ const Login = () => {
             <button
               type="button"
               className="text-blue-500 hover:text-blue-700 font-semibold"
-              onClick={() => alert('Função de recuperação de senha ainda não implementada.')}
+              onClick={() => navigate('/forgot-password')}
             >
               Esqueci minha senha
             </button>
