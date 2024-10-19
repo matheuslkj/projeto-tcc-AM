@@ -24,7 +24,7 @@ Route::group(['prefix' => 'v1'], function(){
     Route::post('/logout', [UserController::class, 'logout']);
 
     // Rotas de recuperação de senha
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:30,1');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:20,1');
     Route::post('/reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
 
     Route::get('/password/reset', function () {

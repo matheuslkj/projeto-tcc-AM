@@ -7,20 +7,25 @@ import ForgotPassword from './components/SolicitarSenha';
 import ResetPassword from './components/RedefinirSenha';
 import RegistrarPaciente from './pages/RegistroPaciente';
 import ProtectedRoute from './components/ProtectedRoute'; // Importa o ProtectedRoute
+import ListarProcedimentos from './pages/Procedimetnos';
+import Procedimentos from './pages/Procedimetnos';
+import Profile from './components/Profile';
 
 const App = () => {
   const location = useLocation();
 
+  const hideNavbarRoutes = ['/login', '/forgot-password', '/reset-password'];
+
+
   return (
     <div>
-      {location.pathname !== '/login' && <Navbar />}
+      {/* Exibir Navbar apenas se a rota atual não estiver em hideNavbarRoutes */}
+      {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       <Routes>
-        {/* Rota de login, que fica pública */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 
-        {/* Protegendo a rota da Home */}
         <Route
           path="/"
           element={
@@ -29,13 +34,27 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
-        {/* Protegendo a rota de registro de pacientes */}
+        <Route
+          path="/procedimentos"
+          element={
+            <ProtectedRoute>
+              <Procedimentos/>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/register_patient"
           element={
             <ProtectedRoute>
               <RegistrarPaciente />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile/>
             </ProtectedRoute>
           }
         />
