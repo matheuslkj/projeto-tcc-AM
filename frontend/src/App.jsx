@@ -9,6 +9,7 @@ import RegistrarPaciente from './pages/RegistroPaciente';
 import ProtectedRoute from './components/ProtectedRoute'; // Importa o ProtectedRoute
 import ListarProcedimentos from './pages/Procedimetnos';
 import Procedimentos from './pages/Procedimetnos';
+import DetalhesProcedimento from './components/DetalhesProcedimento';
 import Profile from './components/Profile';
 
 const App = () => {
@@ -57,6 +58,14 @@ const App = () => {
               <Profile/>
             </ProtectedRoute>
           }
+        />
+        <Route 
+        path="/procedimentos/:id" 
+        element={
+          <ProtectedRoute>
+            <DetalhesProcedimento />
+        </ProtectedRoute>
+        } 
         />
       </Routes>
     </div>
