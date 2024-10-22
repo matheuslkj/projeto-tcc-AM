@@ -68,8 +68,10 @@ const Home = () => {
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nome</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Idade</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Profissão</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Data do Atendimento</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Último Atendimento</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700"></th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Opções</th>
                             </tr>
                         </thead>
@@ -78,8 +80,10 @@ const Home = () => {
                                 pacientesFiltrados.map((paciente) => (
                                     <tr key={paciente.id} className="border-t">
                                         <td className="px-4 py-2 text-sm text-gray-600">{paciente.nome}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">{paciente.idade}</td>
                                         <td className="px-4 py-2 text-sm text-gray-600">{paciente.profissao}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
+                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
+                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
                                         <td className="px-4 py-2 text-center">
                                             <button className="text-blue-500 hover:text-blue-700 mr-4">
                                                 <FaEdit />

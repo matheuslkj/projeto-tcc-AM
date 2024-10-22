@@ -86,12 +86,12 @@ const Navbar = () => {
             </Link>
           </li>
           <li>
-            <Link to="/patients" className="text-lg hover:underline" onClick={toggleSidebar}>
+            <Link to="/pacientes" className="text-lg hover:underline" onClick={toggleSidebar}>
               Lista de Pacientes
             </Link>
           </li>
           <li>
-            <Link to="/procedures" className="text-lg hover:underline" onClick={toggleSidebar}>
+            <Link to="/procedimentos" className="text-lg hover:underline" onClick={toggleSidebar}>
               Procedimentos
             </Link>
           </li>
