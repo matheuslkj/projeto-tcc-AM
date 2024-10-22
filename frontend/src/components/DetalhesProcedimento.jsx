@@ -23,6 +23,22 @@ const DetalhesProcedimento = () => {
   if (!procedimento) {
     return <p>Carregando...</p>;
   }
+  const converterLinkYoutube = (url) => {
+    let videoId = null;
+  
+    if (url.includes('youtube.com/watch')) {
+      videoId = url.split('v=')[1]?.split('&')[0];  // Captura o ID do vídeo da URL padrão
+    } else if (url.includes('youtu.be')) {
+      videoId = url.split('youtu.be/')[1];  // Captura o ID do vídeo de um link curto
+    }
+  
+    if (!videoId) return url; // Retorna o link original se não for um link do YouTube válido
+  
+    const embedLink = `https://www.youtube.com/embed/${videoId}`;
+    return embedLink;
+  };
+  
+  
 
   return (
     <div className="min-h-screen flex justify-center items-center p-10 bg-gray-100">
@@ -45,14 +61,21 @@ const DetalhesProcedimento = () => {
         </div>
 
         {procedimento.video && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold mb-2">Vídeo Demonstrativo</h2>
-            <video controls className="w-full">
-              <source src={`http://127.0.0.1:8000/storage/${procedimento.video}`} type="video/mp4" />
-              Seu navegador não suporta o elemento de vídeo.
-            </video>
-          </div>
-        )}
+  <div className="mb-6">
+    <h2 className="text-xl font-semibold mb-2">Vídeo Demonstrativo</h2>
+    <iframe
+      width="560"
+      height="315"
+      src={converterLinkYoutube(procedimento.video)}
+      title="Vídeo do Procedimento"
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+      className="w-full"
+    ></iframe>
+  </div>
+)}
+
       </div>
     </div>
   );

@@ -20,22 +20,15 @@ class ProcedimentoController extends Controller
             'nome' => 'required|string|max:255',
             'descricao' => 'required|string',
             'objetivo' => 'required|string|max:255',
-            'video' => 'nullable|file|mimes:mp4,avi,mkv|max:20480' // 20MB
+            'video' => 'nullable|url' // 20MB
         ]);
 
-        // Upload do vídeo (se existir)
-        $videoPath = null;
-        if ($request->hasFile('video')) {
-            $videoPath = $request->file('video')->store('videos', 'public');
-        }
-
-        // Cria o procedimento
+   
         $procedimento = Procedimento::create([
             'nome' => $request->nome,
             'descricao' => $request->descricao,
             'objetivo' => $request->objetivo,
-            'video' => $videoPath ? 'storage/' . $videoPath : null // Armazenar o caminho completo
-
+            'video' => $request->video,
         ]);
 
         return response()->json(['message' => 'Procedimento cadastrado com sucesso', 'procedimento' => $procedimento], 201);

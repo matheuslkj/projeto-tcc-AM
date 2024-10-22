@@ -7,8 +7,7 @@ import ForgotPassword from './components/SolicitarSenha';
 import ResetPassword from './components/RedefinirSenha';
 import RegistrarPaciente from './pages/RegistroPaciente';
 import ProtectedRoute from './components/ProtectedRoute'; // Importa o ProtectedRoute
-import ListarProcedimentos from './pages/Procedimetnos';
-import Procedimentos from './pages/Procedimetnos';
+import Procedimentos from './components/Procedimetnos';
 import DetalhesProcedimento from './components/DetalhesProcedimento';
 import Profile from './components/Profile';
 
