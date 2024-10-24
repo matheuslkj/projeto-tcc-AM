@@ -1,21 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FaBars, FaTimes, FaUser } from 'react-icons/fa'; // Ícone de usuário
+import { FaBars, FaTimes, FaUser } from 'react-icons/fa';
+import axios from 'axios'; // Importando o axios
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false); // Estado para controlar o dropdown
-  const navigate = useNavigate(); // Para redirecionar ao sair
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [userName, setUserName] = useState(''); // Estado para o nome do usuário
+  const navigate = useNavigate();
+
+  // Carregar o nome do usuário do localStorage ou sessionStorage
+  useEffect(() => {
+    const storedUserName = localStorage.getItem('userName') || sessionStorage.getItem('userName');
+    if (storedUserName) {
+      setUserName(storedUserName);
+    } else {
+      console.error("Nome do usuário não encontrado no localStorage/sessionStorage");
+    }
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
   const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen); // Alterna a visibilidade do dropdown
+    setDropdownOpen(!dropdownOpen);
   };
 
   const handleLogout = () => {
+    // Remover token e nome do usuário do storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userName');
+    
     // Redireciona para a tela de login
     navigate('/login');
   };
@@ -28,17 +46,24 @@ const Navbar = () => {
         <button onClick={toggleSidebar} className="text-white text-2xl focus:outline-none">
           <FaBars />
         </button>
-        <div className="text-xl font-bold"><Link to={"/"}>Logo</Link></div>
+        <div className="text-xl font-bold">
+          <Link to="/">Logo</Link>
+        </div>
         {/* Opções normais */}
         <div className="space-x-4 hidden md:flex items-center">
           {/* Ícone de perfil com dropdown */}
-          <div className="relative">
+          <div className="relative flex flex-col items-center">
             <button 
               onClick={toggleDropdown} 
-              className="focus:outline-none text-white hover:text-blue-300"
+              className="focus:outline-none text-white hover:text-blue-300 flex flex-col items-center"
             >
-              <FaUser className="text-2xl" /> {/* Ícone de perfil */}
+              <FaUser className="text-3xl" /> {/* Ícone de perfil */}
             </button>
+
+            {/* Nome do usuário abaixo do ícone de perfil */}
+            {userName && (
+              <div className="text-sm text-white mt-1">{userName}</div>
+            )}
 
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
@@ -50,7 +75,7 @@ const Navbar = () => {
                   Editar Perfil
                 </Link>
                 <button
-                  onClick={handleLogout} // Ao clicar, redireciona para o login
+                  onClick={handleLogout} 
                   className="block px-4 py-2 text-gray-800 hover:bg-gray-200 w-full text-left"
                 >
                   Sair

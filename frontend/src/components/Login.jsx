@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Ícones para mostrar/esconder senha
+import InputMask from 'react-input-mask'; // Importando a biblioteca de máscara
 
 const Login = () => {
   const [cpf, setCpf] = useState('');
@@ -28,12 +29,15 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
+        const userName = data.user.name; // Capturando o nome do usuário
 
-        // Armazenar o token no localStorage (ou sessionStorage)
+        // Armazenar o token e o nome do usuário no localStorage ou sessionStorage
         if (manterConectado) {
           localStorage.setItem('token', token);
+          localStorage.setItem('userName', userName); // Armazenando o nome
         } else {
           sessionStorage.setItem('token', token);
+          sessionStorage.setItem('userName', userName); // Armazenando o nome
         }
 
         // Redireciona para a página de listagem de pacientes após o login
@@ -62,15 +66,21 @@ const Login = () => {
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cpf">
               CPF
             </label>
-            <input
-              type="text"
-              id="cpf"
+            <InputMask
+              mask="999.999.999-99" // Máscara de CPF
               value={cpf}
               onChange={(e) => setCpf(e.target.value)}
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              placeholder="Digite seu CPF"
-              required
-            />
+            >
+              {() => (
+                <input
+                  type="text"
+                  id="cpf"
+                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                  placeholder="Digite seu CPF"
+                  required
+                />
+              )}
+            </InputMask>
           </div>
           <div className="mb-6 relative">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="senha">
