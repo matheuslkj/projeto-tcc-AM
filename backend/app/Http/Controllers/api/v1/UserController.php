@@ -41,7 +41,10 @@ class UserController extends Controller
     // Método para retornar o perfil do usuário
     public function profile()
     {
+        $token = $user->createToken('token-name')->plainTextToken;
+
         return response()->json(Auth::user());
+        
     }
 
     // Método para atualizar o perfil do usuário
