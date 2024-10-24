@@ -33,16 +33,22 @@ class UserController extends Controller
     // Método para logout
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+     
+      try {
+            // Invalida o token de autenticação do usuário
+            $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logout realizado com sucesso']);
+            return response()->json(['message' => 'Logout realizado com sucesso']);
+        } catch (\Exception $e) {
+            // Captura qualquer erro que possa ocorrer
+            return response()->json(['error' => 'Erro ao tentar deslogar'], 500);
+        }
+    
     }
 
     // Método para retornar o perfil do usuário
     public function profile()
     {
-        $token = $user->createToken('token-name')->plainTextToken;
-
         return response()->json(Auth::user());
         
     }

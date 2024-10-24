@@ -23,12 +23,20 @@ const Procedimentos = () => {
 
   const buscarProcedimentos = async () => {
     try {
-      const resposta = await axios.get('http://127.0.0.1:8000/api/v1/procedimentos');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      const resposta = await axios.get('http://127.0.0.1:8000/api/v1/procedimentos', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
       setProcedimentos(resposta.data);
     } catch (erro) {
       console.error('Erro ao buscar procedimentos:', erro);
     }
   };
+  
 
   const handleCadastroProcedimento = async (e) => {
     e.preventDefault();
@@ -41,14 +49,22 @@ const Procedimentos = () => {
     };
 
     try {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (editando) {
-        // Se estamos editando, enviamos uma requisição PUT
-        await axios.put(`http://127.0.0.1:8000/api/v1/procedimentos/${idEditando}`, formData);
+        await axios.put(`http://127.0.0.1:8000/api/v1/procedimentos/${idEditando}`, formData,{
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
         setEditando(false); // Reseta o estado de edição
         setIdEditando(null); // Limpa o ID do procedimento sendo editado
       } else {
         // Caso contrário, criamos um novo procedimento (POST)
-        await axios.post('http://127.0.0.1:8000/api/v1/procedimentos', formData);
+        await axios.post('http://127.0.0.1:8000/api/v1/procedimentos', formData,{
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
       }
 
       setDadosFormulario({ nome: '', descricao: '', objetivo: '', video: '' });

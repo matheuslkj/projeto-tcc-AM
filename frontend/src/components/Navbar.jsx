@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaUser } from 'react-icons/fa';
-import axios from 'axios'; // Importando o axios
+import axios from 'axios'; // Importando o axios para as requisições
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -27,15 +27,31 @@ const Navbar = () => {
     setDropdownOpen(!dropdownOpen);
   };
 
-  const handleLogout = () => {
-    // Remover token e nome do usuário do storage
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    sessionStorage.removeItem('token');
-    sessionStorage.removeItem('userName');
-    
-    // Redireciona para a tela de login
-    navigate('/login');
+  const handleLogout = async () => {
+    try {
+      // Fazer requisição para o backend para logout
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+      // Verifica se há um token antes de tentar fazer logout
+      if (token) {
+        await axios.post('http://localhost:8000/api/v1/logout', {}, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
+
+      // Remover token e nome do usuário do storage
+      localStorage.removeItem('token');
+      localStorage.removeItem('userName');
+      sessionStorage.removeItem('token');
+      sessionStorage.removeItem('userName');
+      
+      // Redireciona para a tela de login
+      navigate('/login');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   return (
@@ -57,7 +73,7 @@ const Navbar = () => {
               onClick={toggleDropdown} 
               className="focus:outline-none text-white hover:text-blue-300 flex flex-col items-center"
             >
-              <FaUser className="text-3xl" /> {/* Ícone de perfil */}
+              <FaUser className="text-1xl" /> {/* Ícone de perfil */}
             </button>
 
             {/* Nome do usuário abaixo do ícone de perfil */}
