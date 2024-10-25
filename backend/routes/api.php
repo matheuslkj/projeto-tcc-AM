@@ -16,6 +16,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('pacientes', PacienteController::class);
         Route::apiResource('procedimentos', ProcedimentoController::class);
+        Route::apiResource('agendamentos', AgendamentosController::class);
 
         // Rotas de perfil de usuário
         Route::get('/user/profile', [UserController::class, 'profile']);

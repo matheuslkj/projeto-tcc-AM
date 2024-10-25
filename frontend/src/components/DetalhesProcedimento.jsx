@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import ReactPlayer from 'react-player'; // Importando a biblioteca ReactPlayer
 
 const DetalhesProcedimento = () => {
   const { id } = useParams(); // Pegamos o ID do procedimento a partir da URL
   const [procedimento, setProcedimento] = useState(null);
+  const [isVideoOpen, setIsVideoOpen] = useState(false); // Controle para abrir o vídeo em tela cheia
   const navigate = useNavigate(); // Para navegar de volta
 
   useEffect(() => {
@@ -30,6 +32,7 @@ const DetalhesProcedimento = () => {
   if (!procedimento) {
     return <p>Carregando...</p>;
   }
+
   const converterLinkYoutube = (url) => {
     let videoId = null;
   
@@ -44,45 +47,56 @@ const DetalhesProcedimento = () => {
     const embedLink = `https://www.youtube.com/embed/${videoId}`;
     return embedLink;
   };
-  
-  
 
   return (
-    <div className="min-h-screen flex justify-center items-center p-10 bg-gray-100">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-3xl font-bold">{procedimento.nome}</h1>
-          <button onClick={() => navigate(-1)} className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+    <div className="min-h-screen flex justify-center items-center p-10 bg-gradient-to-r from-blue-100 via-white to-blue-100">
+      <div className="bg-white shadow-xl rounded-lg p-6 w-full max-w-4xl relative">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-blue-700">{procedimento.nome}</h1>
+          <button 
+            onClick={() => navigate(-1)} 
+            className="bg-blue-600 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-700 transition duration-300"
+          >
             Voltar
           </button>
         </div>
 
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Descrição</h2>
-          <p className="text-gray-700">{procedimento.descricao}</p>
+          <h2 className="text-xl font-semibold text-blue-600 mb-2">Descrição</h2>
+          <p className="text-gray-600 text-lg leading-relaxed">{procedimento.descricao}</p>
         </div>
 
         <div className="mb-6">
-          <h2 className="text-xl font-semibold mb-2">Objetivo</h2>
-          <p className="text-gray-700">{procedimento.objetivo}</p>
+          <h2 className="text-xl font-semibold text-blue-600 mb-2">Objetivo</h2>
+          <p className="text-gray-600 text-lg leading-relaxed">{procedimento.objetivo}</p>
         </div>
 
         {procedimento.video && (
-  <div className="mb-6">
-    <h2 className="text-xl font-semibold mb-2">Vídeo Demonstrativo</h2>
-    <iframe
-      width="560"
-      height="315"
-      src={converterLinkYoutube(procedimento.video)}
-      title="Vídeo do Procedimento"
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-      className="w-full"
-    ></iframe>
-  </div>
-)}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-blue-600 mb-2">Vídeo Demonstrativo</h2>
 
+            {/* Vídeo em miniatura */}
+            <div 
+              className={`relative overflow-hidden rounded-lg shadow-lg transition duration-300 ease-in-out ${isVideoOpen ? 'w-full h-96' : 'w-full h-48 cursor-pointer'}`}
+              onClick={() => setIsVideoOpen(!isVideoOpen)} // Expande o vídeo ao clicar
+            >
+              <ReactPlayer
+                url={converterLinkYoutube(procedimento.video)}
+                width="100%"
+                height="100%"
+                controls={true}
+                light={!isVideoOpen} // Mostra uma imagem de miniatura até clicar
+              />
+              {!isVideoOpen && (
+                <div className="absolute inset-0 bg-black bg-opacity-30 flex justify-center items-center">
+                  <button className="bg-white text-blue-600 px-4 py-2 rounded-lg font-semibold shadow-lg">
+                    Assistir Vídeo
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

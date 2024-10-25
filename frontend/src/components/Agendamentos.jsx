@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Importando axios
 
 const Agendamentos = () => {
     // Estados para armazenar os valores dos campos
@@ -9,66 +10,59 @@ const Agendamentos = () => {
     const [status, setStatus] = useState('PENDENTE');
     const [pacientes, setPacientes] = useState([]);
 
-    // Função para buscar pacientes da API
     useEffect(() => {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token'); // Ou outra forma que você armazena o token
-
-        fetch('http://127.0.0.1:8000/api/v1/pacientes', {
-            headers: {
-                'Authorization': `Bearer ${token}`, // Adicione o token de autenticação
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar pacientes');
-                }
-                return response.json();
-            })
-            .then(data => setPacientes(data))
-            .catch(error => console.error('Erro ao buscar pacientes:', error));
+        buscarPacientes();
     }, []);
 
+    const buscarPacientes = async () => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const resposta = await axios.get('http://127.0.0.1:8000/api/v1/pacientes', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setPacientes(resposta.data);
+        } catch (erro) {
+            console.error('Erro ao buscar pacientes:', erro);
+        }
+    };
+
     // Função para manipular o envio do formulário
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         // Dados do novo agendamento
         const novoAgendamento = {
-            paciente_id: pacienteId,
+            id_paciente: pacienteId,
             data_atendimento: dataAtendimento,
             hora_atendimento: horaAtendimento,
             historico: historico,
             status: status
         };
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
-        // Fazer o POST para cadastrar o agendamento na API
-        fetch('http://127.0.0.1:8000/api/v1/agendamentos', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(novoAgendamento) // Enviar os dados no corpo da requisição
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro ao cadastrar agendamento');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Agendamento cadastrado com sucesso:', data);
-                // Limpar os campos do formulário
-                setPacienteId('');
-                setDataAtendimento('');
-                setHoraAtendimento('');
-                setHistorico('');
-                setStatus('PENDENTE');
-            })
-            .catch(error => console.error('Erro ao cadastrar agendamento:', error));
+        try {
+            // Fazendo o POST para cadastrar o agendamento na API
+            const response = await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', novoAgendamento, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Agendamento cadastrado com sucesso:', response.data);
+
+            // Limpar os campos do formulário
+            setPacienteId('');
+            setDataAtendimento('');
+            setHoraAtendimento('');
+            setHistorico('');
+            setStatus('PENDENTE');
+        } catch (error) {
+            console.error('Erro ao cadastrar agendamento:', error);
+        }
     };
 
     return (

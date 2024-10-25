@@ -2,20 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
 import FormularioPaciente from './FormularioPaciente';
-import { format } from 'date-fns'; // Importe a função format
-import ptBR from 'date-fns/locale/pt-BR'; // Para formatar em português
+import { format } from 'date-fns'; 
+import ptBR from 'date-fns/locale/pt-BR'; 
 
 const Home = () => {
-    const [pacientes, setPacientes] = useState([]);
+    const [agendamentos, setAgendamentos] = useState([]);
     const [busca, setBusca] = useState('');
     const [mostrarModal, setMostrarModal] = useState(false);
-    const [agendamentos, setAgendamentos] = useState([]);
+
+   
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
     const buscarAgendamentos = async () => {
         try {
-            const resposta = await axios.get('http://127.0.0.1:8000/api/v1/agendamentos');
-            console.log(resposta.data);
-            setAgendamentos(resposta.data);
+            const resposta = await axios.get('http://127.0.0.1:8000/api/v1/agendamentos', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setAgendamentos(resposta.data); 
         } catch (erro) {
             console.error('Erro ao buscar agendamentos:', erro);
         }
@@ -25,8 +30,11 @@ const Home = () => {
         buscarAgendamentos();
     }, []);
 
+    useEffect(() => {
+    }, [agendamentos]);
+
     const agendamentosFiltrados = agendamentos.filter(agendamento =>
-        agendamento.paciente && agendamento.paciente.nome && agendamento.paciente.nome.toLowerCase().includes(busca.toLowerCase())
+        agendamento.paciente?.nome?.toLowerCase().includes(busca.toLowerCase())
     );
 
     const handleAdicionarPaciente = () => {
@@ -39,9 +47,13 @@ const Home = () => {
 
     const handleSubmitFormulario = async (dadosPaciente) => {
         try {
-            await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dadosPaciente);
+            await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dadosPaciente, {
+                headers: {
+                    Authorization: `Bearer ${token}`, 
+                },
+            });
             setMostrarModal(false);
-            buscarAgendamentos();
+            buscarAgendamentos(); 
         } catch (erro) {
             console.error('Erro ao cadastrar paciente:', erro);
         }
@@ -71,7 +83,7 @@ const Home = () => {
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nome</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700"></th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Profissão</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Data do Atendimento</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
@@ -82,7 +94,7 @@ const Home = () => {
                             {agendamentosFiltrados.length > 0 ? (
                                 agendamentosFiltrados.map((agendamento) => (
                                     <tr key={agendamento.id} className="border-t">
-                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente.nome} {agendamento.paciente.sobrenome}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
                                         <td className="px-4 py-2 text-sm text-gray-600">{agendamento.profissao}</td>
                                         <td className="px-4 py-2 text-sm text-gray-600">
                                             {agendamento.data_atendimento ? format(new Date(agendamento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR }) : ''}
@@ -113,11 +125,10 @@ const Home = () => {
                 </div>
             </div>
 
-            {/* Modal */}
             {mostrarModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                     <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
-                        <FormularioPaciente onSubmit={handleSubmitFormulario} />
+                        <FormularioPaciente onSubmit={handleSubmitFormulario} onClose={handleFecharModal} />
                     </div>
                 </div>
             )}
