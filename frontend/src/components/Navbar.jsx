@@ -62,9 +62,8 @@ const Navbar = () => {
         <button onClick={toggleSidebar} className="text-white text-2xl focus:outline-none">
           <FaBars />
         </button>
-        <div className="text-xl font-bold">
-          <Link to="/">Logo</Link>
-        </div>
+        <div className="text-xl font-bold"><Link to={"/"}>Logo</Link></div>
+        <div className="absolute right-20 font-bold"><Link to={"/agendamentos"}>Agendar</Link></div>
         {/* Opções normais */}
         <div className="space-x-4 hidden md:flex items-center">
           {/* Ícone de perfil com dropdown */}

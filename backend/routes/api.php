@@ -2,6 +2,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\v1\PacienteController;
+use App\Http\Controllers\api\v1\AgendamentosController;
 use App\Http\Controllers\api\v1\ProcedimentoController;
 use App\Http\Controllers\api\v1\UserController;
 use App\Http\Controllers\Auth\ForgotPasswordController;

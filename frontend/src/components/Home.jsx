@@ -1,44 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import axios from 'axios';
-import FormularioPaciente from './FormularioPaciente'; // Importar o formulário de paciente
+import FormularioPaciente from './FormularioPaciente';
+import { format } from 'date-fns'; // Importe a função format
+import ptBR from 'date-fns/locale/pt-BR'; // Para formatar em português
 
 const Home = () => {
     const [pacientes, setPacientes] = useState([]);
     const [busca, setBusca] = useState('');
-    const [mostrarModal, setMostrarModal] = useState(false); // Estado para controlar o modal
+    const [mostrarModal, setMostrarModal] = useState(false);
+    const [agendamentos, setAgendamentos] = useState([]);
 
-    const buscarPacientes = async () => {
+    const buscarAgendamentos = async () => {
         try {
-            const resposta = await axios.get('http://127.0.0.1:8000/api/v1/pacientes');
-            setPacientes(resposta.data);
+            const resposta = await axios.get('http://127.0.0.1:8000/api/v1/agendamentos');
+            console.log(resposta.data);
+            setAgendamentos(resposta.data);
         } catch (erro) {
-            console.error('Erro ao buscar pacientes:', erro);
+            console.error('Erro ao buscar agendamentos:', erro);
         }
     };
 
     useEffect(() => {
-        buscarPacientes();
+        buscarAgendamentos();
     }, []);
 
-    const pacientesFiltrados = pacientes.filter(paciente =>
-        paciente.nome.toLowerCase().includes(busca.toLowerCase())
+    const agendamentosFiltrados = agendamentos.filter(agendamento =>
+        agendamento.paciente && agendamento.paciente.nome && agendamento.paciente.nome.toLowerCase().includes(busca.toLowerCase())
     );
 
     const handleAdicionarPaciente = () => {
-        setMostrarModal(true); // Mostrar o modal quando clicar em "Adicionar Paciente"
+        setMostrarModal(true);
     };
 
     const handleFecharModal = () => {
-        setMostrarModal(false); // Fechar o modal
+        setMostrarModal(false);
     };
 
     const handleSubmitFormulario = async (dadosPaciente) => {
-        // Aqui você faz a requisição para cadastrar o paciente
         try {
             await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dadosPaciente);
-            setMostrarModal(false); // Fechar o modal após o cadastro
-            buscarPacientes(); // Atualizar a lista de pacientes
+            setMostrarModal(false);
+            buscarAgendamentos();
         } catch (erro) {
             console.error('Erro ao cadastrar paciente:', erro);
         }
@@ -68,22 +71,26 @@ const Home = () => {
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nome</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Profissão</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Data do Atendimento</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Último Atendimento</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700"></th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Data do Atendimento</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Opções</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {pacientesFiltrados.length > 0 ? (
-                                pacientesFiltrados.map((paciente) => (
-                                    <tr key={paciente.id} className="border-t">
-                                        <td className="px-4 py-2 text-sm text-gray-600">{paciente.nome}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">{paciente.profissao}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
-                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
-                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
+                            {agendamentosFiltrados.length > 0 ? (
+                                agendamentosFiltrados.map((agendamento) => (
+                                    <tr key={agendamento.id} className="border-t">
+                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente.nome} {agendamento.paciente.sobrenome}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.profissao}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">
+                                            {agendamento.data_atendimento ? format(new Date(agendamento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR }) : ''}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">
+                                            {agendamento.hora_atendimento ? format(new Date(`1970-01-01T${agendamento.hora_atendimento}`), 'HH:mm', { locale: ptBR }) : ''}
+                                        </td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.status}</td>
                                         <td className="px-4 py-2 text-center">
                                             <button className="text-blue-500 hover:text-blue-700 mr-4">
                                                 <FaEdit />
@@ -96,8 +103,8 @@ const Home = () => {
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan="4" className="px-4 py-2 text-sm text-gray-600 text-center">
-                                        Nenhum paciente encontrado
+                                    <td colSpan="6" className="px-4 py-2 text-sm text-gray-600 text-center">
+                                        Nenhum agendamento encontrado
                                     </td>
                                 </tr>
                             )}
@@ -109,7 +116,7 @@ const Home = () => {
             {/* Modal */}
             {mostrarModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto"> {/* max-h-screen e overflow-y-auto adicionados */}
+                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
                         <FormularioPaciente onSubmit={handleSubmitFormulario} />
                     </div>
                 </div>

@@ -9,6 +9,8 @@ class Paciente extends Model
 {
     use HasFactory;
 
+    
+
     protected $fillable = [
         'nome',
         'sobrenome',
@@ -26,4 +28,8 @@ class Paciente extends Model
         'cidade_estado',
         'complemento',
     ];
+
+    public function agendamento(){
+        return $this->hasMany(Agendamento::class, 'id_paciente');
+    }
 }
