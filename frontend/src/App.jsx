@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
+import Agendamentos from "./components/Agendamentos"
 import Login from './components/Login';
 import ForgotPassword from './components/SolicitarSenha';
 import ResetPassword from './components/RedefinirSenha';
@@ -35,10 +36,18 @@ const App = () => {
           }
         />
         <Route
+          path="/agendamentos"
+          element={
+            <ProtectedRoute>
+              <Agendamentos />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/procedimentos"
           element={
             <ProtectedRoute>
-              <Procedimentos/>
+              <Procedimentos />
             </ProtectedRoute>
           }
         />
@@ -54,17 +63,17 @@ const App = () => {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Profile/>
+              <Profile />
             </ProtectedRoute>
           }
         />
-        <Route 
-        path="/procedimentos/:id" 
-        element={
-          <ProtectedRoute>
-            <DetalhesProcedimento />
-        </ProtectedRoute>
-        } 
+        <Route
+          path="/procedimentos/:id"
+          element={
+            <ProtectedRoute>
+              <DetalhesProcedimento />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </div>

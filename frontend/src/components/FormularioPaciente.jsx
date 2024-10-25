@@ -140,7 +140,6 @@ const FormularioPaciente = ({ onSubmit }) => {
           Cadastrar
         </button>
       </div>
-
     </form>
   );
 };
