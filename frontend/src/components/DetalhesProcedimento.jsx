@@ -10,7 +10,14 @@ const DetalhesProcedimento = () => {
   useEffect(() => {
     const buscarProcedimento = async () => {
       try {
-        const resposta = await axios.get(`http://127.0.0.1:8000/api/v1/procedimentos/${id}`);
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+        const resposta = await axios.get(`http://127.0.0.1:8000/api/v1/procedimentos/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        
         setProcedimento(resposta.data);
       } catch (erro) {
         console.error('Erro ao buscar procedimento:', erro);
