@@ -11,7 +11,7 @@ const Agendamentos = () => {
 
     // Função para buscar pacientes da API
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Ou outra forma que você armazena o token
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token'); // Ou outra forma que você armazena o token
 
         fetch('http://127.0.0.1:8000/api/v1/pacientes', {
             headers: {

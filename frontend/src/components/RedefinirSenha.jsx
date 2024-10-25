@@ -37,7 +37,7 @@ const ResetPassword = () => {
 
   return (
     <div className="min-h-screen flex">
-      <div className="w-full flex flex-col justify-center items-center bg-white p-8">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
         <h1 className="text-3xl font-bold mb-6">Redefinir Senha</h1>
         <form onSubmit={handleResetPassword} className="w-full max-w-md">
           <div className="mb-4">
@@ -65,6 +65,13 @@ const ResetPassword = () => {
           </button>
         </form>
         {message && <p className="mt-4 text-red-500">{message}</p>}
+      </div>
+      <div className="w-1/2 hidden md:block">
+        <img
+          src="https://blog.allcare.com.br/wp-content/uploads/2023/09/fisio.jpg"
+          alt="Imagem relacionada à saúde"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );

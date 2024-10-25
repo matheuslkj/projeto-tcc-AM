@@ -20,7 +20,7 @@ const ForgotPassword = () => {
       if (response.ok) {
         setMessage('Um link de redefinição de senha foi enviado para o seu e-mail.');
       } else {
-        setMessage( data.message ||'Erro ao enviar o link de redefinição de senha.');
+        setMessage(data.message || 'Erro ao enviar o link de redefinição de senha.');
       }
     } catch (error) {
       console.error('Erro ao enviar o link de redefinição:', error);
@@ -30,7 +30,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen flex">
-      <div className="w-full flex flex-col justify-center items-center bg-white p-8">
+      <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
         <h1 className="text-3xl font-bold mb-6">Esqueceu sua senha?</h1>
         <form onSubmit={handleForgotPassword} className="w-full max-w-md">
           <div className="mb-4">
@@ -48,6 +48,13 @@ const ForgotPassword = () => {
           </button>
         </form>
         {message && <p className="mt-4 text-red-500">{message}</p>}
+      </div>
+      <div className="w-1/2 hidden md:block">
+        <img
+          src="https://blog.allcare.com.br/wp-content/uploads/2023/09/fisio.jpg"
+          alt="Imagem relacionada à saúde"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );
