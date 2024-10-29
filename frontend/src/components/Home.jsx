@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
 import axios from 'axios';
 import FormularioPaciente from './FormularioPaciente';
-import { format } from 'date-fns'; 
-import ptBR from 'date-fns/locale/pt-BR'; 
+import { format } from 'date-fns';
+import ptBR from 'date-fns/locale/pt-BR';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Home = () => {
     const [agendamentos, setAgendamentos] = useState([]);
     const [busca, setBusca] = useState('');
     const [mostrarModal, setMostrarModal] = useState(false);
-    const navigate = useNavigate(); // Inicializa o hook para navegação
+    const [ordenacao, setOrdenacao] = useState({ campo: 'nome', ordem: 'asc' });
+    const navigate = useNavigate();
 
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
@@ -21,7 +23,7 @@ const Home = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setAgendamentos(resposta.data); 
+            setAgendamentos(resposta.data);
         } catch (erro) {
             console.error('Erro ao buscar agendamentos:', erro);
         }
@@ -30,6 +32,30 @@ const Home = () => {
     useEffect(() => {
         buscarAgendamentos();
     }, []);
+
+    const ordenarAgendamentos = (campo) => {
+        const novaOrdem = ordenacao.ordem === 'asc' ? 'desc' : 'asc';
+        setOrdenacao({ campo, ordem: novaOrdem });
+        
+        const agendamentosOrdenados = [...agendamentos].sort((a, b) => {
+            if (campo === 'nome') {
+                return novaOrdem === 'asc'
+                    ? a.paciente.nome.localeCompare(b.paciente.nome)
+                    : b.paciente.nome.localeCompare(a.paciente.nome);
+            } else if (campo === 'data_atendimento') {
+                return novaOrdem === 'asc'
+                    ? new Date(a.data_atendimento) - new Date(b.data_atendimento)
+                    : new Date(b.data_atendimento) - new Date(a.data_atendimento);
+            } else if (campo === 'status') {
+                return novaOrdem === 'asc'
+                    ? a.status.localeCompare(b.status)
+                    : b.status.localeCompare(a.status);
+            }
+            return 0;
+        });
+        
+        setAgendamentos(agendamentosOrdenados);
+    };
 
     const agendamentosFiltrados = agendamentos.filter(agendamento =>
         agendamento.paciente?.nome?.toLowerCase().includes(busca.toLowerCase())
@@ -40,22 +66,35 @@ const Home = () => {
     };
 
     const handleEditar = (agendamentoId) => {
-        navigate(`/editar-agendamento/${agendamentoId}`); // Navega para a página de edição de agendamento
+        navigate(`/editar-agendamento/${agendamentoId}`);
     };
 
     const handleExcluir = async (id) => {
-        if (window.confirm('Tem certeza que deseja excluir este agendamento?')) {
-            try {
-                await axios.delete(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                buscarAgendamentos(); // Atualizar lista de agendamentos após a exclusão
-            } catch (erro) {
-                console.error('Erro ao excluir agendamento:', erro);
+        Swal.fire({
+            title: 'Tem certeza?',
+            text: 'Você não poderá reverter essa ação!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, excluir!',
+            cancelButtonText: 'Cancelar'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    await axios.delete(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    Swal.fire('Excluído!', 'O agendamento foi excluído com sucesso.', 'success');
+                    buscarAgendamentos();
+                } catch (erro) {
+                    console.error('Erro ao excluir agendamento:', erro);
+                    Swal.fire('Erro!', 'Ocorreu um erro ao excluir o agendamento.', 'error');
+                }
             }
-        }
+        });
     };
 
     const handleFecharModal = () => {
@@ -105,11 +144,17 @@ const Home = () => {
                     <table className="min-w-full bg-white border border-gray-200">
                         <thead>
                             <tr className="bg-gray-100">
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nome</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                    Nome <FaSort onClick={() => ordenarAgendamentos('nome')} className="inline cursor-pointer"/>
+                                </th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700"></th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Data do Atendimento</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                    Data do Atendimento <FaSort onClick={() => ordenarAgendamentos('data_atendimento')} className="inline cursor-pointer"/>
+                                </th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                    Status <FaSort onClick={() => ordenarAgendamentos('status')} className="inline cursor-pointer"/>
+                                </th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Opções</th>
                             </tr>
                         </thead>
@@ -125,7 +170,12 @@ const Home = () => {
                                         <td className="px-4 py-2 text-sm text-gray-600">
                                             {agendamento.hora_atendimento ? format(new Date(`1970-01-01T${agendamento.hora_atendimento}`), 'HH:mm', { locale: ptBR }) : ''}
                                         </td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.status}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-600">
+                                            <div className="flex items-center min-w-[100px] justify-between">
+                                                <span>{agendamento.status}</span>
+                                                <span className={`ml-2 w-3 h-3 rounded-full ${agendamento.status === 'PENDENTE' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
+                                            </div>
+                                        </td>
                                         <td className="px-4 py-2 text-center">
                                             <button onClick={() => handleEditar(agendamento.id)} className="text-blue-500 hover:text-blue-700 mr-4">
                                                 <FaEdit />
