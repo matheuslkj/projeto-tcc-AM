@@ -10,7 +10,6 @@ const Home = () => {
     const [busca, setBusca] = useState('');
     const [mostrarModal, setMostrarModal] = useState(false);
 
-   
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
     const buscarAgendamentos = async () => {
@@ -29,9 +28,6 @@ const Home = () => {
     useEffect(() => {
         buscarAgendamentos();
     }, []);
-
-    useEffect(() => {
-    }, [agendamentos]);
 
     const agendamentosFiltrados = agendamentos.filter(agendamento =>
         agendamento.paciente?.nome?.toLowerCase().includes(busca.toLowerCase())
@@ -56,6 +52,13 @@ const Home = () => {
             buscarAgendamentos(); 
         } catch (erro) {
             console.error('Erro ao cadastrar paciente:', erro);
+        }
+    };
+
+    // Função para fechar o modal ao clicar fora dele
+    const handleClickOutsideModal = (e) => {
+        if (e.target.id === 'modal-overlay') {
+            handleFecharModal();
         }
     };
 
@@ -126,8 +129,12 @@ const Home = () => {
             </div>
 
             {mostrarModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto">
+                <div
+                    id="modal-overlay"
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                    onClick={handleClickOutsideModal}
+                >
+                    <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-screen overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <FormularioPaciente onSubmit={handleSubmitFormulario} onClose={handleFecharModal} />
                     </div>
                 </div>
