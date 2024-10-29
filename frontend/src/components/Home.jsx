@@ -4,11 +4,13 @@ import axios from 'axios';
 import FormularioPaciente from './FormularioPaciente';
 import { format } from 'date-fns'; 
 import ptBR from 'date-fns/locale/pt-BR'; 
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
     const [agendamentos, setAgendamentos] = useState([]);
     const [busca, setBusca] = useState('');
     const [mostrarModal, setMostrarModal] = useState(false);
+    const navigate = useNavigate(); // Inicializa o hook para navegação
 
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
@@ -37,25 +39,43 @@ const Home = () => {
         setMostrarModal(true);
     };
 
+    const handleEditar = (agendamentoId) => {
+        navigate(`/editar-agendamento/${agendamentoId}`); // Navega para a página de edição de agendamento
+    };
+
+    const handleExcluir = async (id) => {
+        if (window.confirm('Tem certeza que deseja excluir este agendamento?')) {
+            try {
+                await axios.delete(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                buscarAgendamentos(); // Atualizar lista de agendamentos após a exclusão
+            } catch (erro) {
+                console.error('Erro ao excluir agendamento:', erro);
+            }
+        }
+    };
+
     const handleFecharModal = () => {
         setMostrarModal(false);
     };
 
     const handleSubmitFormulario = async (dadosPaciente) => {
         try {
-            await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dadosPaciente, {
+            await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', dadosPaciente, {
                 headers: {
-                    Authorization: `Bearer ${token}`, 
+                    Authorization: `Bearer ${token}`,
                 },
             });
             setMostrarModal(false);
-            buscarAgendamentos(); 
+            buscarAgendamentos();
         } catch (erro) {
-            console.error('Erro ao cadastrar paciente:', erro);
+            console.error('Erro ao salvar agendamento:', erro);
         }
     };
 
-    // Função para fechar o modal ao clicar fora dele
     const handleClickOutsideModal = (e) => {
         if (e.target.id === 'modal-overlay') {
             handleFecharModal();
@@ -86,7 +106,7 @@ const Home = () => {
                         <thead>
                             <tr className="bg-gray-100">
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Nome</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Profissão</th>
+                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700"></th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Data do Atendimento</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
                                 <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Status</th>
@@ -96,9 +116,9 @@ const Home = () => {
                         <tbody>
                             {agendamentosFiltrados.length > 0 ? (
                                 agendamentosFiltrados.map((agendamento) => (
-                                    <tr key={agendamento.id} className="border-t">
+                                    <tr key={agendamento.id} className="border-t hover:bg-gray-200">
                                         <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.profissao}</td>
+                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
                                         <td className="px-4 py-2 text-sm text-gray-600">
                                             {agendamento.data_atendimento ? format(new Date(agendamento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR }) : ''}
                                         </td>
@@ -107,10 +127,10 @@ const Home = () => {
                                         </td>
                                         <td className="px-4 py-2 text-sm text-gray-600">{agendamento.status}</td>
                                         <td className="px-4 py-2 text-center">
-                                            <button className="text-blue-500 hover:text-blue-700 mr-4">
+                                            <button onClick={() => handleEditar(agendamento.id)} className="text-blue-500 hover:text-blue-700 mr-4">
                                                 <FaEdit />
                                             </button>
-                                            <button className="text-red-500 hover:text-red-700">
+                                            <button onClick={() => handleExcluir(agendamento.id)} className="text-red-500 hover:text-red-700">
                                                 <FaTrash />
                                             </button>
                                         </td>

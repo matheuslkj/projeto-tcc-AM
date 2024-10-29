@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Importando axios
+import axios from 'axios';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const Agendamentos = () => {
-    // Estados para armazenar os valores dos campos
+    const { id } = useParams(); // Pega o ID do agendamento da URL
+    const navigate = useNavigate();
+    
     const [pacienteId, setPacienteId] = useState('');
     const [dataAtendimento, setDataAtendimento] = useState('');
     const [horaAtendimento, setHoraAtendimento] = useState('');
@@ -12,7 +15,10 @@ const Agendamentos = () => {
 
     useEffect(() => {
         buscarPacientes();
-    }, []);
+        if (id) {
+            buscarAgendamento(); // Carrega o agendamento para edição
+        }
+    }, [id]);
 
     const buscarPacientes = async () => {
         try {
@@ -28,12 +34,30 @@ const Agendamentos = () => {
         }
     };
 
-    // Função para manipular o envio do formulário
+    const buscarAgendamento = async () => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const resposta = await axios.get(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const agendamento = resposta.data;
+            setPacienteId(agendamento.id_paciente);
+            setDataAtendimento(agendamento.data_atendimento);
+            setHoraAtendimento(agendamento.hora_atendimento);
+            setHistorico(agendamento.historico);
+            setStatus(agendamento.status);
+        } catch (erro) {
+            console.error('Erro ao buscar agendamento:', erro);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Dados do novo agendamento
-        const novoAgendamento = {
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const agendamentoData = {
             id_paciente: pacienteId,
             data_atendimento: dataAtendimento,
             hora_atendimento: horaAtendimento,
@@ -41,34 +65,43 @@ const Agendamentos = () => {
             status: status
         };
 
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-
         try {
-            // Fazendo o POST para cadastrar o agendamento na API
-            const response = await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', novoAgendamento, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
+            if (id) {
+                // Atualiza o agendamento existente
+                await axios.put(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, agendamentoData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Agendamento atualizado com sucesso');
+            } else {
+                // Cria um novo agendamento
+                await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', agendamentoData, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Agendamento cadastrado com sucesso');
+            }
 
-            console.log('Agendamento cadastrado com sucesso:', response.data);
-
-            // Limpar os campos do formulário
+            // Limpa o formulário e navega de volta para a lista de agendamentos
             setPacienteId('');
             setDataAtendimento('');
             setHoraAtendimento('');
             setHistorico('');
             setStatus('PENDENTE');
-        } catch (error) {
-            console.error('Erro ao cadastrar agendamento:', error);
+            navigate('/');
+        } catch (erro) {
+            console.error('Erro ao salvar agendamento:', erro);
         }
     };
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h1 className="text-2xl font-bold mb-6">Agendamento de Atendimento</h1>
+                <h1 className="text-2xl font-bold mb-6">{id ? 'Editar Agendamento' : 'Agendar Atendimento'}</h1>
                 <form onSubmit={handleSubmit}>
                     <div className="mb-4">
                         <label className="block text-gray-700 font-bold mb-2" htmlFor="paciente">
@@ -162,7 +195,7 @@ const Agendamentos = () => {
                         <button
                             type="button"
                             className="w-32 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600"
-                            onClick={() => console.log('Cancelado')}
+                            onClick={() => navigate('/')}
                         >
                             Cancelar
                         </button>
