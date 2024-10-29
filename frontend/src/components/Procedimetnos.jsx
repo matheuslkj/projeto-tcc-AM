@@ -13,8 +13,8 @@ const Procedimentos = () => {
     objetivo: '',
     video: '',
   });
-  const [editando, setEditando] = useState(false); // Estado para controlar se estamos editando
-  const [idEditando, setIdEditando] = useState(null); // Armazenar o ID do procedimento sendo editado
+  const [editando, setEditando] = useState(false); 
+  const [idEditando, setIdEditando] = useState(null); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,23 +24,19 @@ const Procedimentos = () => {
   const buscarProcedimentos = async () => {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
       const resposta = await axios.get('http://127.0.0.1:8000/api/v1/procedimentos', {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
       setProcedimentos(resposta.data);
     } catch (erro) {
       console.error('Erro ao buscar procedimentos:', erro);
     }
   };
-  
 
   const handleCadastroProcedimento = async (e) => {
     e.preventDefault();
-
     const formData = {
       nome: dadosFormulario.nome,
       descricao: dadosFormulario.descricao,
@@ -49,22 +45,21 @@ const Procedimentos = () => {
     };
 
     try {
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       if (editando) {
-        await axios.put(`http://127.0.0.1:8000/api/v1/procedimentos/${idEditando}`, formData,{
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-        setEditando(false); // Reseta o estado de edição
-        setIdEditando(null); // Limpa o ID do procedimento sendo editado
+        await axios.put(`http://127.0.0.1:8000/api/v1/procedimentos/${idEditando}`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setEditando(false);
+        setIdEditando(null);
       } else {
-        // Caso contrário, criamos um novo procedimento (POST)
-        await axios.post('http://127.0.0.1:8000/api/v1/procedimentos', formData,{
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+        await axios.post('http://127.0.0.1:8000/api/v1/procedimentos', formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
 
       setDadosFormulario({ nome: '', descricao: '', objetivo: '', video: '' });
@@ -82,16 +77,16 @@ const Procedimentos = () => {
       objetivo: procedimento.objetivo,
       video: procedimento.video,
     });
-    setIdEditando(procedimento.id); // Seta o ID do procedimento sendo editado
-    setEditando(true); // Muda para modo de edição
-    setMostrarModal(true); // Abre o modal
+    setIdEditando(procedimento.id);
+    setEditando(true);
+    setMostrarModal(true);
   };
 
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este procedimento?')) {
       try {
         await axios.delete(`http://127.0.0.1:8000/api/v1/procedimentos/${id}`);
-        buscarProcedimentos(); // Atualiza a lista após a exclusão
+        buscarProcedimentos();
       } catch (erro) {
         console.error('Erro ao excluir procedimento:', erro);
       }
@@ -114,12 +109,24 @@ const Procedimentos = () => {
     });
   };
 
+  const handleClickOutsideModal = (e) => {
+    if (e.target.id === 'modal-overlay') {
+      setMostrarModal(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-10 bg-gray-100">
-      {/* Modal */}
       {mostrarModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-lg">
+        <div
+          id="modal-overlay"
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50"
+          onClick={handleClickOutsideModal}
+        >
+          <div
+            className="bg-white p-6 rounded shadow-lg w-full max-w-lg"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h2 className="text-2xl font-bold mb-6">{editando ? 'Editar Procedimento' : 'Cadastrar Procedimento'}</h2>
             <form onSubmit={handleCadastroProcedimento}>
               <div className="mb-4">
@@ -186,7 +193,6 @@ const Procedimentos = () => {
         </div>
       )}
 
-      {/* Tabela de Procedimentos */}
       <div className="w-full max-w-4xl bg-white shadow-lg rounded-lg">
         <div className="bg-blue-500 text-white p-4 flex justify-between items-center rounded-t-lg">
           <div className="flex items-center space-x-2 bg-white rounded-lg p-1">
@@ -219,10 +225,7 @@ const Procedimentos = () => {
             <tbody>
               {procedimentosFiltrados.length > 0 ? (
                 procedimentosFiltrados.map((procedimento) => (
-                  <tr
-                    key={procedimento.id}
-                    className="border-t cursor-pointer hover:bg-gray-200"
-                  >
+                  <tr key={procedimento.id} className="border-t cursor-pointer hover:bg-gray-200">
                     <td className="border px-4 py-2" onClick={() => handleClickProcedimento(procedimento.id)}>
                       {procedimento.nome}
                     </td>
@@ -232,7 +235,6 @@ const Procedimentos = () => {
                     <td className="border px-4 py-2" onClick={() => handleClickProcedimento(procedimento.id)}>
                       {procedimento.objetivo}
                     </td>
-
                     <td className="border px-4 py-2 text-center">
                       <button
                         onClick={() => handleEditar(procedimento)}
@@ -245,25 +247,23 @@ const Procedimentos = () => {
                         className="text-red-500 hover:text-red-700"
                       >
                         <FaTrashAlt />
-                        </button>
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" className="border px-4 py-2 text-center">
+                    Nenhum procedimento encontrado
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="border px-4 py-2 text-center">
-                  Nenhum procedimento encontrado
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
   );
 };
 
 export default Procedimentos;
-
-                   
