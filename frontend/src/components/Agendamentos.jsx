@@ -55,13 +55,10 @@ const Agendamentos = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Obtém o token do localStorage ou sessionStorage
+    
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-
-        // Formata hora_atendimento se necessário
         const formattedHoraAtendimento = horaAtendimento ? horaAtendimento.slice(0, 5) : '';
-
+    
         const novoAgendamento = {
             id_paciente: pacienteId,
             data_atendimento: dataAtendimento,
@@ -69,21 +66,32 @@ const Agendamentos = () => {
             historico: historico,
             status: status
         };
-
+    
         try {
-            // Envia o agendamento formatado para o backend
-            await axios.put(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, novoAgendamento, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            console.log('Agendamento atualizado com sucesso');
+            if (id) {
+                // Atualiza o agendamento existente
+                await axios.put(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, novoAgendamento, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Agendamento atualizado com sucesso');
+            } else {
+                // Cria um novo agendamento
+                await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', novoAgendamento, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                console.log('Novo agendamento criado com sucesso');
+            }
         } catch (error) {
-            console.error('Erro ao atualizar agendamento:', error);
+            console.error('Erro ao salvar agendamento:', error);
         }
     };
+    
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100">

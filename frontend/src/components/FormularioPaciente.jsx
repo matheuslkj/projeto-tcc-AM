@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const FormularioPaciente = ({ onSubmit }) => {
   const [dadosFormulario, setDadosFormulario] = useState({
@@ -44,7 +46,7 @@ const FormularioPaciente = ({ onSubmit }) => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Remover a formatação do CPF e telefone antes de enviar
@@ -54,7 +56,46 @@ const FormularioPaciente = ({ onSubmit }) => {
       telefone: dadosFormulario.telefone.replace(/\D/g, ''), // Remove formatação do telefone
     };
 
-    onSubmit(dadosParaEnviar);
+    try {
+      // Obtém o token do localStorage ou sessionStorage
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      
+      // Faz a requisição POST para cadastrar o paciente
+      await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dadosParaEnviar, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Alerta de sucesso
+      Swal.fire('Sucesso!', 'Paciente cadastrado com sucesso!', 'success');
+      
+      // Limpa o formulário
+      setDadosFormulario({
+        nome: '',
+        sobrenome: '',
+        nascimento: '',
+        cpf: '',
+        email: '',
+        profissao: '',
+        sintomas: '',
+        genero: '',
+        telefone: '',
+        cep: '',
+        logradouro: '',
+        numero: '',
+        bairro: '',
+        cidade_estado: '',
+        complemento: '',
+      });
+
+    } catch (error) {
+      console.error('Erro ao cadastrar paciente:', error);
+      
+      // Alerta de erro
+      Swal.fire('Erro!', 'Ocorreu um erro ao cadastrar o paciente. Verifique os campos e tente novamente.', 'error');
+    }
   };
 
   const formatarCPF = (cpf) => {
