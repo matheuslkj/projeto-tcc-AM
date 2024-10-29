@@ -5,7 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 const Agendamentos = () => {
     const { id } = useParams(); // Pega o ID do agendamento da URL
     const navigate = useNavigate();
-    
+
     const [pacienteId, setPacienteId] = useState('');
     const [dataAtendimento, setDataAtendimento] = useState('');
     const [horaAtendimento, setHoraAtendimento] = useState('');
@@ -56,45 +56,32 @@ const Agendamentos = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // Obtém o token do localStorage ou sessionStorage
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        const agendamentoData = {
+
+        // Formata hora_atendimento se necessário
+        const formattedHoraAtendimento = horaAtendimento ? horaAtendimento.slice(0, 5) : '';
+
+        const novoAgendamento = {
             id_paciente: pacienteId,
             data_atendimento: dataAtendimento,
-            hora_atendimento: horaAtendimento,
+            hora_atendimento: formattedHoraAtendimento,
             historico: historico,
             status: status
         };
 
         try {
-            if (id) {
-                // Atualiza o agendamento existente
-                await axios.put(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, agendamentoData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                console.log('Agendamento atualizado com sucesso');
-            } else {
-                // Cria um novo agendamento
-                await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', agendamentoData, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                console.log('Agendamento cadastrado com sucesso');
-            }
+            // Envia o agendamento formatado para o backend
+            await axios.put(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, novoAgendamento, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
 
-            // Limpa o formulário e navega de volta para a lista de agendamentos
-            setPacienteId('');
-            setDataAtendimento('');
-            setHoraAtendimento('');
-            setHistorico('');
-            setStatus('PENDENTE');
-            navigate('/');
-        } catch (erro) {
-            console.error('Erro ao salvar agendamento:', erro);
+            console.log('Agendamento atualizado com sucesso');
+        } catch (error) {
+            console.error('Erro ao atualizar agendamento:', error);
         }
     };
 
@@ -157,12 +144,13 @@ const Agendamentos = () => {
                         </label>
                         <textarea
                             id="historico"
-                            value={historico}
+                            value={historico || ''}
                             onChange={(e) => setHistorico(e.target.value)}
                             placeholder="Descreva o que foi realizado no atendimento"
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             rows="4"
                         ></textarea>
+
                     </div>
 
                     <div className="mb-4">

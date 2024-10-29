@@ -29,11 +29,11 @@ class AgendamentosController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'id_paciente' => 'required',
+            'id_paciente' => 'required|exists:pacientes,id',
             'data_atendimento' => 'required|date',
-            'hora_atendimento' => 'required',
+            'hora_atendimento' => 'required|date_format:H:i',
             'historico' => 'nullable|string',
-            'status' => 'required'
+            'status' => 'required|in:PENDENTE,REALIZADO'
         ]);
 
         $agendamento = Agendamento::create([
@@ -55,7 +55,7 @@ class AgendamentosController extends Controller
      */
     public function show($id)
     {
-        $agendamento = Agendamento::find($id);
+        $agendamento = Agendamento::with('Paciente')->find($id);
 
         if (!$agendamento) {
             return response()->json(['message' => 'Agendamento não encontrado'], 404);
@@ -63,13 +63,6 @@ class AgendamentosController extends Controller
 
         return response()->json($agendamento, 200);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
 
     /**
      * Update the specified resource in storage.
@@ -87,11 +80,11 @@ class AgendamentosController extends Controller
         }
 
         $validated = $request->validate([
-            'id_paciente' => 'required',
+            'id_paciente' => 'required|exists:pacientes,id',
             'data_atendimento' => 'required|date',
-            'hora_atendimento' => 'required|time',
+            'hora_atendimento' => 'required|date_format:H:i',
             'historico' => 'nullable|string',
-            'status' => 'required'
+            'status' => 'required|in:PENDENTE,REALIZADO'
         ]);
 
         $agendamento->update($validated);
