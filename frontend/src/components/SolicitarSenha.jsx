@@ -8,10 +8,14 @@ const ForgotPassword = () => {
     e.preventDefault();
 
     try {
+      // Verifica o token no localStorage ou sessionStorage
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
       const response = await fetch('http://localhost:8000/api/v1/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}), // Adiciona o token se existir
         },
         body: JSON.stringify({ email }),
       });

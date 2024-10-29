@@ -53,22 +53,29 @@ class UserController extends Controller
         
     }
 
-    // Método para atualizar o perfil do usuário
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
+
+        // Validação dos campos
         $request->validate([
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'sometimes|string|min:8|confirmed',
+            'specialty' => 'nullable|string|max:255',
+            'about' => 'nullable|string',
         ]);
 
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
-        }
+        // Atualiza os campos de perfil
+        $user->name = $request->input('name', $user->name);
+        $user->specialty = $request->input('specialty', $user->specialty);
+        $user->about = $request->input('about', $user->about);
 
-        $user->update($request->except('cpf'));
+        // Salva as alterações no banco de dados
+        $user->save();
 
-        return response()->json(['message' => 'Perfil atualizado com sucesso']);
+        // Retorna uma resposta JSON com a confirmação e os dados atualizados
+        return response()->json([
+            'message' => 'Perfil atualizado com sucesso',
+            'user' => $user,
+        ]);
     }
 }

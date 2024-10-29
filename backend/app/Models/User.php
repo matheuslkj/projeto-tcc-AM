@@ -16,8 +16,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'cpf',  // Adicione o CPF como campo para autenticação
+        'cpf',
         'password',
+        'specialty',
+        'about',
     ];
 
     protected $hidden = [

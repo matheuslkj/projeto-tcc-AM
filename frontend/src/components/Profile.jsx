@@ -1,32 +1,68 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaRegFileImage } from 'react-icons/fa';
+import axios from 'axios';
 
 const Profile = () => {
   const [name, setName] = useState('');
   const [specialty, setSpecialty] = useState('');
-  const [profilePic, setProfilePic] = useState(null);
   const [about, setAbout] = useState('');
-
-  const handleProfilePicChange = (e) => {
-    setProfilePic(e.target.files[0]);
-  };
-
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  // Função para buscar os dados do perfil do usuário
+  const fetchUserProfile = async () => {
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const response = await axios.get('http://127.0.0.1:8000/api/v1/user/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const { name = '', specialty = '', about = '' } = response.data;
+      setName(name);
+      setSpecialty(specialty);
+      setAbout(about);
+    } catch (error) {
+      console.error('Erro ao carregar o perfil:', error);
+    }
+  };
+
+  // Chama a função de buscar perfil ao carregar o componente
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  // Função para enviar o formulário de atualização de perfil
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Lógica para salvar o perfil
-    alert('Perfil salvo com sucesso!');
+
+    try {
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+      const data = {
+        name,
+        specialty,
+        about,
+      };
+
+      const response = await axios.put('http://127.0.0.1:8000/api/v1/user/profile', data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log('Resposta do backend:', response.data);
+      alert('Perfil salvo com sucesso!');
+      navigate('/');
+    } catch (error) {
+      console.error('Erro ao salvar perfil:', error);
+      alert('Erro ao salvar o perfil. Verifique os campos e tente novamente.');
+    }
   };
 
   const handleCancel = () => {
-    // Lógica para cancelar as alterações
     setName('');
     setSpecialty('');
-    setProfilePic(null);
     setAbout('');
-
     navigate('/');
   };
 
@@ -40,7 +76,7 @@ const Profile = () => {
           <input
             type="text"
             id="name"
-            value={name}
+            value={name || ''}
             onChange={(e) => setName(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Digite o nome"
@@ -54,32 +90,11 @@ const Profile = () => {
           <input
             type="text"
             id="specialty"
-            value={specialty}
+            value={specialty || ''}
             onChange={(e) => setSpecialty(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Digite a especialidade"
           />
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-gray-700 font-bold mb-1" htmlFor="profilePic">
-            Perfil
-          </label>
-          <div className="flex items-center">
-            <input
-              type="file"
-              id="profilePic"
-              onChange={handleProfilePicChange}
-              className="hidden"
-            />
-            <label htmlFor="profilePic" className="cursor-pointer">
-              <FaRegFileImage className="text-2xl text-gray-600 hover:text-blue-500" />
-              
-            </label>
-            {profilePic && (
-              <span className="ml-2 text-gray-700">{profilePic.name}</span>
-            )}
-          </div>
         </div>
 
         <div className="mb-4">
@@ -88,7 +103,7 @@ const Profile = () => {
           </label>
           <textarea
             id="about"
-            value={about}
+            value={about || ''}
             onChange={(e) => setAbout(e.target.value)}
             className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Escreva sobre..."
