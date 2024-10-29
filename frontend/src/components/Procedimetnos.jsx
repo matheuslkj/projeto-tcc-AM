@@ -85,7 +85,12 @@ const Procedimentos = () => {
   const handleExcluir = async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este procedimento?')) {
       try {
-        await axios.delete(`http://127.0.0.1:8000/api/v1/procedimentos/${id}`);
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        await axios.delete(`http://127.0.0.1:8000/api/v1/procedimentos/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         buscarProcedimentos();
       } catch (erro) {
         console.error('Erro ao excluir procedimento:', erro);
