@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const Agendamentos = () => {
     const { id } = useParams(); // Pega o ID do agendamento da URL
@@ -28,11 +29,15 @@ const Agendamentos = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            setPacientes(resposta.data);
+            
+            // Ordena os pacientes pelo nome em ordem alfabética
+            const pacientesOrdenados = resposta.data.sort((a, b) => a.nome.localeCompare(b.nome));
+            setPacientes(pacientesOrdenados);
         } catch (erro) {
             console.error('Erro ao buscar pacientes:', erro);
         }
     };
+    
 
     const buscarAgendamento = async () => {
         try {
@@ -55,10 +60,10 @@ const Agendamentos = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         const formattedHoraAtendimento = horaAtendimento ? horaAtendimento.slice(0, 5) : '';
-    
+
         const novoAgendamento = {
             id_paciente: pacienteId,
             data_atendimento: dataAtendimento,
@@ -66,7 +71,7 @@ const Agendamentos = () => {
             historico: historico,
             status: status
         };
-    
+
         try {
             if (id) {
                 // Atualiza o agendamento existente
@@ -76,7 +81,7 @@ const Agendamentos = () => {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log('Agendamento atualizado com sucesso');
+                Swal.fire('Sucesso!', 'Agendamento atualizado com sucesso!', 'success');
             } else {
                 // Cria um novo agendamento
                 await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', novoAgendamento, {
@@ -85,13 +90,13 @@ const Agendamentos = () => {
                         'Content-Type': 'application/json',
                     },
                 });
-                console.log('Novo agendamento criado com sucesso');
+                Swal.fire('Sucesso!', 'Novo agendamento criado com sucesso!', 'success');
             }
         } catch (error) {
             console.error('Erro ao salvar agendamento:', error);
+            Swal.fire('Erro!', 'Ocorreu um erro ao salvar o agendamento. Tente novamente.', 'error');
         }
     };
-    
 
     return (
         <div className="min-h-screen flex justify-center items-center bg-gray-100">
@@ -158,7 +163,6 @@ const Agendamentos = () => {
                             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             rows="4"
                         ></textarea>
-
                     </div>
 
                     <div className="mb-4">
