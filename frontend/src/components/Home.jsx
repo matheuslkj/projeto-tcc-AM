@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
 import axios from 'axios';
-import FormularioPaciente from './FormularioPaciente';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import { useNavigate } from 'react-router-dom';

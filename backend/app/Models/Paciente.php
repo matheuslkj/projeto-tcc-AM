@@ -27,6 +27,7 @@ class Paciente extends Model
         'bairro',
         'cidade_estado',
         'complemento',
+        'data_cadastro',
     ];
 
     public function agendamento(){

@@ -7,10 +7,12 @@ import Login from './components/Login';
 import ForgotPassword from './components/SolicitarSenha';
 import ResetPassword from './components/RedefinirSenha';
 import RegistrarPaciente from './pages/RegistroPaciente';
-import ProtectedRoute from './components/ProtectedRoute'; // Importa o ProtectedRoute
+import ProtectedRoute from './components/ProtectedRoute'; 
 import Procedimentos from './components/Procedimetnos';
 import DetalhesProcedimento from './components/DetalhesProcedimento';
 import Profile from './components/Profile';
+import Pacientes from './components/pacientes';
+import DetalhesPaciente from './components/DetalhesPaciente';
 
 const App = () => {
   const location = useLocation();
@@ -45,18 +47,18 @@ const App = () => {
           }
         />
         <Route
-          path="/procedimentos"
+          path="/pacientes"
           element={
             <ProtectedRoute>
-              <Procedimentos />
+              <Pacientes/>
             </ProtectedRoute>
           }
         />
         <Route
-          path="/register_patient"
+          path="/procedimentos"
           element={
             <ProtectedRoute>
-              <RegistrarPaciente />
+              <Procedimentos />
             </ProtectedRoute>
           }
         />
@@ -73,6 +75,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <DetalhesProcedimento />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/paciente/:id"
+          element={
+            <ProtectedRoute>
+              <DetalhesPaciente/>
             </ProtectedRoute>
           }
         />

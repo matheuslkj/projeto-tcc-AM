@@ -8,22 +8,11 @@ use Illuminate\Http\Request;
 
 class PacienteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return response()->json(Paciente::all(), 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         // Validação dos campos
@@ -46,40 +35,25 @@ class PacienteController extends Controller
         ]);
 
         $validated['cpf'] = preg_replace('/\D/', '', $validated['cpf']);
+        $validated['data_cadastro'] = now();
 
         $paciente = Paciente::create($validated);
 
         return response()->json($paciente, 201);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         $paciente = Paciente::find($id);
-
         if (!$paciente) {
             return response()->json(['message' => 'Paciente não encontrado'], 404);
         }
-
         return response()->json($paciente, 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $paciente = Paciente::find($id);
-
         if (!$paciente) {
             return response()->json(['message' => 'Paciente não encontrado'], 404);
         }
@@ -107,22 +81,14 @@ class PacienteController extends Controller
         return response()->json($paciente, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         $paciente = Paciente::find($id);
-
         if (!$paciente) {
             return response()->json(['message' => 'Paciente não encontrado'], 404);
         }
 
         $paciente->delete();
-
         return response()->json(['message' => 'Paciente excluído com sucesso'], 200);
     }
 }
