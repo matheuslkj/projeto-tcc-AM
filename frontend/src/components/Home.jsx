@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaPlus, FaSort, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
@@ -10,8 +10,12 @@ const Home = () => {
     const [agendamentos, setAgendamentos] = useState([]);
     const [busca, setBusca] = useState('');
     const [mostrarModal, setMostrarModal] = useState(false);
-    const [ordenacao, setOrdenacao] = useState({ campo: 'nome', ordem: 'asc' });
+    const [ordenacaoHoje, setOrdenacaoHoje] = useState({ campo: 'nome', ordem: 'asc' });
+    const [ordenacaoOutrosDias, setOrdenacaoOutrosDias] = useState({ campo: 'nome', ordem: 'asc' });
+    const [paginaHoje, setPaginaHoje] = useState(1);
+    const [paginaOutrosDias, setPaginaOutrosDias] = useState(1);
     const navigate = useNavigate();
+    const itensPorPagina = 10;
 
     const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
@@ -32,10 +36,18 @@ const Home = () => {
         buscarAgendamentos();
     }, []);
 
-    const ordenarAgendamentos = (campo) => {
-        const novaOrdem = ordenacao.ordem === 'asc' ? 'desc' : 'asc';
-        setOrdenacao({ campo, ordem: novaOrdem });
-        
+    const ordenarAgendamentos = (campo, tipoTabela) => {
+        const novaOrdem = tipoTabela === 'hoje'
+            ? ordenacaoHoje.ordem === 'asc' ? 'desc' : 'asc'
+            : ordenacaoOutrosDias.ordem === 'asc' ? 'desc' : 'asc';
+
+        const ordenacaoAtualizada = { campo, ordem: novaOrdem };
+        if (tipoTabela === 'hoje') {
+            setOrdenacaoHoje(ordenacaoAtualizada);
+        } else {
+            setOrdenacaoOutrosDias(ordenacaoAtualizada);
+        }
+
         const agendamentosOrdenados = [...agendamentos].sort((a, b) => {
             if (campo === 'nome') {
                 return novaOrdem === 'asc'
@@ -52,12 +64,20 @@ const Home = () => {
             }
             return 0;
         });
-        
+
         setAgendamentos(agendamentosOrdenados);
     };
 
     const agendamentosFiltrados = agendamentos.filter(agendamento =>
         agendamento.paciente?.nome?.toLowerCase().includes(busca.toLowerCase())
+    );
+
+    const dataHoje = format(new Date(), 'yyyy-MM-dd');
+    const agendamentosHoje = agendamentosFiltrados.filter(agendamento =>
+        agendamento.data_atendimento === dataHoje
+    );
+    const agendamentosOutrosDias = agendamentosFiltrados.filter(agendamento =>
+        agendamento.data_atendimento !== dataHoje
     );
 
     const handleAdicionarPaciente = () => {
@@ -120,9 +140,93 @@ const Home = () => {
         }
     };
 
+    const renderTabela = (titulo, agendamentos, pagina, setPagina, ordenacao, tipoTabela) => {
+        const inicio = (pagina - 1) * itensPorPagina;
+        const paginatedData = agendamentos.slice(inicio, inicio + itensPorPagina);
+        const totalPaginas = Math.ceil(agendamentos.length / itensPorPagina);
+
+        return (
+            <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">{titulo}</h3>
+                <table className="min-w-full bg-white border border-gray-200">
+                    <thead>
+                        <tr className="bg-gray-100">
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                Nome <FaSort onClick={() => ordenarAgendamentos('nome', tipoTabela)} className="inline cursor-pointer"/>
+                            </th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                Data do Atendimento <FaSort onClick={() => ordenarAgendamentos('data_atendimento', tipoTabela)} className="inline cursor-pointer"/>
+                            </th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                Status <FaSort onClick={() => ordenarAgendamentos('status', tipoTabela)} className="inline cursor-pointer"/>
+                            </th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Opções</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {paginatedData.length > 0 ? (
+                            paginatedData.map((agendamento) => (
+                                <tr key={agendamento.id} className="border-t hover:bg-gray-200">
+                                    <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
+                                    <td className="px-4 py-2 text-sm text-gray-600">
+                                        {agendamento.data_atendimento || ''}
+                                    </td>
+                                    <td className="px-4 py-2 text-sm text-gray-600">
+                                        {agendamento.hora_atendimento 
+                                            ? format(new Date(`1970-01-01T${agendamento.hora_atendimento}`), 'HH:mm', { locale: ptBR }) 
+                                            : ''}
+                                    </td>
+                                    <td className="px-4 py-2 text-sm text-gray-600">
+                                        <div className="flex items-center min-w-[100px] justify-between">
+                                            <span>{agendamento.status}</span>
+                                            <span className={`ml-2 w-3 h-3 rounded-full ${agendamento.status === 'PENDENTE' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-2 text-center">
+                                        <button onClick={() => handleEditar(agendamento.id)} className="text-blue-500 hover:text-blue-700 mr-4">
+                                            <FaEdit />
+                                        </button>
+                                        <button onClick={() => handleExcluir(agendamento.id)} className="text-red-500 hover:text-red-700">
+                                            <FaTrash />
+                                        </button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan="5" className="px-4 py-2 text-sm text-gray-600 text-center">
+                                    Nenhum agendamento encontrado
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
+                {/* Paginação */}
+                <div className="flex justify-end mt-4">
+                    <button
+                        disabled={pagina === 1}
+                        onClick={() => setPagina(pagina - 1)}
+                        className="p-2 border rounded mr-2 disabled:opacity-50"
+                    >
+                        <FaChevronLeft />
+                    </button>
+                    <span className="p-2">{pagina} de {totalPaginas}</span>
+                    <button
+                        disabled={pagina === totalPaginas}
+                        onClick={() => setPagina(pagina + 1)}
+                        className="p-2 border rounded ml-2 disabled:opacity-50"
+                    >
+                        <FaChevronRight />
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
     return (
-        <div className='min-h-screen flex justify-center m-10'>
-            <div className="overflow-x-auto w-full max-w-4xl">
+        <div className='min-h-screen flex flex-col items-center m-10'>
+            <div className="overflow-x-auto w-full max-w-4xl mb-8">
                 <div className="flex justify-between items-center mb-4">
                     <input
                         type="text"
@@ -139,62 +243,8 @@ const Home = () => {
                     </button>
                 </div>
 
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
-                                    Nome <FaSort onClick={() => ordenarAgendamentos('nome')} className="inline cursor-pointer"/>
-                                </th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700"></th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
-                                    Data do Atendimento <FaSort onClick={() => ordenarAgendamentos('data_atendimento')} className="inline cursor-pointer"/>
-                                </th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
-                                    Status <FaSort onClick={() => ordenarAgendamentos('status')} className="inline cursor-pointer"/>
-                                </th>
-                                <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Opções</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {agendamentosFiltrados.length > 0 ? (
-                                agendamentosFiltrados.map((agendamento) => (
-                                    <tr key={agendamento.id} className="border-t hover:bg-gray-200">
-                                        <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
-                                        <td className="px-4 py-2 text-sm text-gray-600"></td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">
-                                            {agendamento.data_atendimento ? format(new Date(agendamento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR }) : ''}
-                                        </td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">
-                                            {agendamento.hora_atendimento ? format(new Date(`1970-01-01T${agendamento.hora_atendimento}`), 'HH:mm', { locale: ptBR }) : ''}
-                                        </td>
-                                        <td className="px-4 py-2 text-sm text-gray-600">
-                                            <div className="flex items-center min-w-[100px] justify-between">
-                                                <span>{agendamento.status}</span>
-                                                <span className={`ml-2 w-3 h-3 rounded-full ${agendamento.status === 'PENDENTE' ? 'bg-yellow-500' : 'bg-green-500'}`}></span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-2 text-center">
-                                            <button onClick={() => handleEditar(agendamento.id)} className="text-blue-500 hover:text-blue-700 mr-4">
-                                                <FaEdit />
-                                            </button>
-                                            <button onClick={() => handleExcluir(agendamento.id)} className="text-red-500 hover:text-red-700">
-                                                <FaTrash />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan="6" className="px-4 py-2 text-sm text-gray-600 text-center">
-                                        Nenhum agendamento encontrado
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                {renderTabela("Atendimentos de Hoje", agendamentosHoje, paginaHoje, setPaginaHoje, ordenacaoHoje, 'hoje')}
+                {renderTabela("Atendimentos de Outros Dias", agendamentosOutrosDias, paginaOutrosDias, setPaginaOutrosDias, ordenacaoOutrosDias, 'outrosDias')}
             </div>
 
             {mostrarModal && (
