@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
 import axios from 'axios';
+import InputMask from 'react-input-mask';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Swal from 'sweetalert2';
@@ -74,7 +75,7 @@ const Pacientes = () => {
       limparFormulario();
       setIsEditing(false);
     } catch (erro) {
-      console.error('Erro ao salvar paciente:', erro);
+      console.error('Erro ao salvar paciente:', erro.response?.data);
       Swal.fire('Erro!', 'Ocorreu um erro ao salvar o paciente.', 'error');
     }
   };
@@ -244,7 +245,7 @@ const Pacientes = () => {
                 </div>
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">CPF</label>
-                  <input type="text" name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+                  <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
                 </div>
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">Email</label>
@@ -269,6 +270,27 @@ const Pacientes = () => {
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">Número</label>
                   <input type="text" name="numero" value={formData.numero} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-gray-700 font-medium mb-1">Gênero</label>
+                  <select name="genero" value={formData.genero} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required>
+                    <option value="">Selecione</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Feminino">Feminino</option>
+                    <option value="Outro">Outro</option>
+                  </select>
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-gray-700 font-medium mb-1">Sintomas</label>
+                  <input type="text" name="sintomas" value={formData.sintomas} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-gray-700 font-medium mb-1">Bairro</label>
+                  <input type="text" name="bairro" value={formData.bairro} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-gray-700 font-medium mb-1">Cidade e Estado</label>
+                  <input type="text" name="cidade_estado" value={formData.cidade_estado} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-gray-700 font-medium mb-1">Complemento</label>
