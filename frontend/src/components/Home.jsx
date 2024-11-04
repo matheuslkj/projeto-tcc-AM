@@ -80,10 +80,6 @@ const Home = () => {
         agendamento.data_atendimento !== dataHoje
     );
 
-    const handleAdicionarPaciente = () => {
-        setMostrarModal(true);
-    };
-
     const handleEditar = (agendamentoId) => {
         navigate(`/editar-agendamento/${agendamentoId}`);
     };
@@ -235,12 +231,6 @@ const Home = () => {
                         value={busca}
                         onChange={(e) => setBusca(e.target.value)}
                     />
-                    <button
-                        onClick={handleAdicionarPaciente}
-                        className="flex items-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-                    >
-                        <FaPlus className="mr-2" /> Adicionar Paciente
-                    </button>
                 </div>
 
                 {renderTabela("Atendimentos de Hoje", agendamentosHoje, paginaHoje, setPaginaHoje, ordenacaoHoje, 'hoje')}
