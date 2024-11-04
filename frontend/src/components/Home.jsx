@@ -130,12 +130,6 @@ const Home = () => {
         }
     };
 
-    const handleClickOutsideModal = (e) => {
-        if (e.target.id === 'modal-overlay') {
-            handleFecharModal();
-        }
-    };
-
     const renderTabela = (titulo, agendamentos, pagina, setPagina, ordenacao, tipoTabela) => {
         const inicio = (pagina - 1) * itensPorPagina;
         const paginatedData = agendamentos.slice(inicio, inicio + itensPorPagina);
@@ -166,7 +160,9 @@ const Home = () => {
                                 <tr key={agendamento.id} className="border-t hover:bg-gray-200">
                                     <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
                                     <td className="px-4 py-2 text-sm text-gray-600">
-                                        {agendamento.data_atendimento || ''}
+                                        {agendamento.data_atendimento 
+                                            ? format(new Date(agendamento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR })
+                                            : ''}
                                     </td>
                                     <td className="px-4 py-2 text-sm text-gray-600">
                                         {agendamento.hora_atendimento 
@@ -198,7 +194,6 @@ const Home = () => {
                         )}
                     </tbody>
                 </table>
-                {/* Paginação */}
                 <div className="flex justify-end mt-4">
                     <button
                         disabled={pagina === 1}
