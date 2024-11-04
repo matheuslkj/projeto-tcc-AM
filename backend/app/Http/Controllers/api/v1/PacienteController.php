@@ -44,11 +44,13 @@ class PacienteController extends Controller
 
     public function show($id)
     {
-        $paciente = Paciente::find($id);
-        if (!$paciente) {
-            return response()->json(['message' => 'Paciente não encontrado'], 404);
-        }
-        return response()->json($paciente, 200);
+        $paciente = Paciente::with('agendamento')->find($id);
+
+    if (!$paciente) {
+        return response()->json(['message' => 'Paciente não encontrado'], 404);
+    }
+
+    return response()->json($paciente->toArray(), 200);
     }
 
     public function update(Request $request, $id)
