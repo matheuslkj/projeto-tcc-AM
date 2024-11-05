@@ -1,6 +1,6 @@
 import React, { useState } from 'react'; 
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaEye, FaEyeSlash, FaArrowLeft } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 
 const ResetPassword = () => {
@@ -61,6 +61,12 @@ const ResetPassword = () => {
   return (
     <div className="min-h-screen flex">
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
+      <div className="w-full max-w-md flex items-center justify-start mb-6">
+          <button onClick={() => navigate('/login')} className="flex items-center text-blue-500 hover:text-blue-700">
+            <FaArrowLeft className="mr-2" />
+            <span>Voltar para Login</span>
+          </button>
+        </div>
         <h1 className="text-3xl font-bold mb-6">Redefinir Senha</h1>
         <form onSubmit={handleResetPassword} className="w-full max-w-md">
           <div className="mb-4 relative">

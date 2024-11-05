@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
 
     try {
-      // Verifica o token no localStorage ou sessionStorage
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
       const response = await fetch('http://localhost:8000/api/v1/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(token ? { Authorization: `Bearer ${token}` } : {}), // Adiciona o token se existir
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ email }),
       });
@@ -35,6 +37,12 @@ const ForgotPassword = () => {
   return (
     <div className="min-h-screen flex">
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center bg-white p-8">
+        <div className="w-full max-w-md flex items-center justify-start mb-6">
+          <button onClick={() => navigate('/login')} className="flex items-center text-blue-500 hover:text-blue-700">
+            <FaArrowLeft className="mr-2" />
+            <span>Voltar para Login</span>
+          </button>
+        </div>
         <h1 className="text-3xl font-bold mb-6">Esqueceu sua senha?</h1>
         <form onSubmit={handleForgotPassword} className="w-full max-w-md">
           <div className="mb-4">
