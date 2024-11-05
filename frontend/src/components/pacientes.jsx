@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
 import axios from 'axios';
-import InputMask from 'react-input-mask';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Swal from 'sweetalert2';
@@ -148,17 +147,12 @@ const Pacientes = () => {
 
   const totalPaginas = Math.ceil(pacientes.filter(p => p.nome.toLowerCase().includes(busca.toLowerCase())).length / itensPorPagina);
 
-  const handlePaginaAnterior = () => {
-    if (paginaAtual > 1) setPaginaAtual(paginaAtual - 1);
-  };
-
-  const handleProximaPagina = () => {
-    if (paginaAtual < totalPaginas) setPaginaAtual(paginaAtual + 1);
+  const handlePaginaClick = (numeroPagina) => {
+    setPaginaAtual(numeroPagina);
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
-
       <div className="max-w-6xl mx-auto mt-8 p-4">
         <div className="flex justify-between items-center mb-4">
           <input
@@ -212,22 +206,24 @@ const Pacientes = () => {
               ))}
             </tbody>
           </table>
-          <div className="flex justify-between items-center mt-4">
-            <button onClick={handlePaginaAnterior} disabled={paginaAtual === 1} className="bg-gray-300 px-3 py-1 rounded-md disabled:opacity-50">
-              Anterior
-            </button>
-            <span>Página {paginaAtual} de {totalPaginas}</span>
-            <button onClick={handleProximaPagina} disabled={paginaAtual === totalPaginas} className="bg-gray-300 px-3 py-1 rounded-md disabled:opacity-50">
-              Próxima
-            </button>
+          <div className="flex justify-center items-center mt-4 space-x-2">
+            {[...Array(totalPaginas).keys()].map(numero => (
+              <button
+                key={numero + 1}
+                onClick={() => handlePaginaClick(numero + 1)}
+                className={`px-3 py-1 rounded ${paginaAtual === numero + 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+              >
+                {numero + 1}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50" onClick={() => setShowModal(false)}>
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg overflow-y-auto max-h-screen" onClick={(e) => e.stopPropagation()}>
             <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Editar Paciente' : 'Cadastrar Paciente'}</h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-2 gap-4">
@@ -298,8 +294,8 @@ const Pacientes = () => {
                 </div>
               </div>
               <div className="flex justify-end mt-4">
-                <button type="button" onClick={() => setShowModal(false)} className="bg-red-500 text-white px-4 py-2 rounded mr-2">Cancelar</button>
-                <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
+                <button type="button" onClick={() => setShowModal(false)} className="w-32 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Cancelar</button>
+                <button type="submit" className="w-32 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
               </div>
             </form>
           </div>
