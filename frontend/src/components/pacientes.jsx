@@ -281,7 +281,7 @@ const Pacientes = () => {
                   </select>
                 </div>
                 <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Sintomas</label>
+                  <label className="block text-gray-700 font-medium mb-1">Sintoma</label>
                   <input type="text" name="sintomas" value={formData.sintomas} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
                 </div>
                 <div className="col-span-1">

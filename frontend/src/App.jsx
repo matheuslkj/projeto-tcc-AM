@@ -6,12 +6,11 @@ import Agendamentos from "./components/Agendamentos"
 import Login from './components/Login';
 import ForgotPassword from './components/SolicitarSenha';
 import ResetPassword from './components/RedefinirSenha';
-import RegistrarPaciente from './pages/RegistroPaciente';
 import ProtectedRoute from './components/ProtectedRoute'; 
-import Procedimentos from './components/Procedimetnos';
+import Procedimentos from './components/Procedimentos';
 import DetalhesProcedimento from './components/DetalhesProcedimento';
 import Profile from './components/Profile';
-import Pacientes from './components/pacientes';
+import Pacientes from './components/Pacientes';
 import DetalhesPaciente from './components/DetalhesPaciente';
 
 const App = () => {
