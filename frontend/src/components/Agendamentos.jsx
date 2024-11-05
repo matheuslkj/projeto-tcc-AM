@@ -30,7 +30,6 @@ const Agendamentos = () => {
                 },
             });
             
-            // Ordena os pacientes pelo nome em ordem alfabética
             const pacientesOrdenados = resposta.data.sort((a, b) => a.nome.localeCompare(b.nome));
             setPacientes(pacientesOrdenados);
         } catch (erro) {
@@ -38,7 +37,6 @@ const Agendamentos = () => {
         }
     };
     
-
     const buscarAgendamento = async () => {
         try {
             const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -92,6 +90,7 @@ const Agendamentos = () => {
                 });
                 Swal.fire('Sucesso!', 'Novo agendamento criado com sucesso!', 'success');
             }
+            navigate('/'); // Redireciona para a listagem de agendamentos
         } catch (error) {
             console.error('Erro ao salvar agendamento:', error);
             Swal.fire('Erro!', 'Ocorreu um erro ao salvar o agendamento. Tente novamente.', 'error');
