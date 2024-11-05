@@ -142,14 +142,14 @@ const Home = () => {
                     <thead>
                         <tr className="bg-gray-100">
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
-                                Nome <FaSort onClick={() => ordenarAgendamentos('nome', tipoTabela)} className="inline cursor-pointer"/>
+                                Nome <FaSort onClick={() => ordenarAgendamentos('nome', tipoTabela)} className="inline cursor-pointer" />
                             </th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
-                                Data do Atendimento <FaSort onClick={() => ordenarAgendamentos('data_atendimento', tipoTabela)} className="inline cursor-pointer"/>
+                                Data do Atendimento <FaSort onClick={() => ordenarAgendamentos('data_atendimento', tipoTabela)} className="inline cursor-pointer" />
                             </th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Hora Atendimento</th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
-                                Status <FaSort onClick={() => ordenarAgendamentos('status', tipoTabela)} className="inline cursor-pointer"/>
+                                Status <FaSort onClick={() => ordenarAgendamentos('status', tipoTabela)} className="inline cursor-pointer" />
                             </th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Opções</th>
                         </tr>
@@ -160,13 +160,13 @@ const Home = () => {
                                 <tr key={agendamento.id} className="border-t hover:bg-gray-200">
                                     <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
                                     <td className="px-4 py-2 text-sm text-gray-600">
-                                        {agendamento.data_atendimento 
-                                            ? format(new Date(agendamento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR })
+                                        {agendamento.data_atendimento
+                                            ? format(new Date(agendamento.data_atendimento + 'T00:00:00'), 'dd-MM-yyyy', { locale: ptBR })
                                             : ''}
                                     </td>
                                     <td className="px-4 py-2 text-sm text-gray-600">
-                                        {agendamento.hora_atendimento 
-                                            ? format(new Date(`1970-01-01T${agendamento.hora_atendimento}`), 'HH:mm', { locale: ptBR }) 
+                                        {agendamento.hora_atendimento
+                                            ? format(new Date(`1970-01-01T${agendamento.hora_atendimento}`), 'HH:mm', { locale: ptBR })
                                             : ''}
                                     </td>
                                     <td className="px-4 py-2 text-sm text-gray-600">
