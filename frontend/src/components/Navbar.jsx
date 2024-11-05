@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaBars, FaTimes, FaUser } from 'react-icons/fa';
-import axios from 'axios'; // Importando o axios para as requisições
+import axios from 'axios';
 
 const Navbar = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [userName, setUserName] = useState(''); // Estado para o nome do usuário
+  const [userName, setUserName] = useState('');
   const navigate = useNavigate();
+  const sidebarRef = useRef(null); // Referência para a sidebar
 
-  // Carregar o nome do usuário do localStorage ou sessionStorage
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName') || sessionStorage.getItem('userName');
     if (storedUserName) {
@@ -29,10 +29,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     try {
-      // Fazer requisição para o backend para logout
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-
-      // Verifica se há um token antes de tentar fazer logout
       if (token) {
         await axios.post('http://localhost:8000/api/v1/logout', {}, {
           headers: {
@@ -40,46 +37,50 @@ const Navbar = () => {
           },
         });
       }
-
-      // Remover token e nome do usuário do storage
       localStorage.removeItem('token');
       localStorage.removeItem('userName');
       sessionStorage.removeItem('token');
       sessionStorage.removeItem('userName');
-      
-      // Redireciona para a tela de login
       navigate('/login');
     } catch (error) {
       console.error('Erro ao fazer logout:', error);
     }
   };
 
+  // Detectar clique fora da sidebar para fechá-la
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
     <div>
       {/* Navbar */}
       <nav className="bg-blue-600 p-4 flex justify-between items-center text-white">
-        {/* Ícone de hamburguer */}
         <button onClick={toggleSidebar} className="text-white text-2xl focus:outline-none">
           <FaBars />
         </button>
         <div className="text-xl font-bold"><Link to={"/"}>Logo</Link></div>
         <div className="absolute right-20 font-bold"><Link to={"/agendamentos"}>Agendar</Link></div>
-        {/* Opções normais */}
         <div className="space-x-4 hidden md:flex items-center">
-          {/* Ícone de perfil com dropdown */}
           <div className="relative flex flex-col items-center">
             <button 
               onClick={toggleDropdown} 
               className="focus:outline-none text-white hover:text-blue-300 flex flex-col items-center"
             >
-              <FaUser className="text-1xl" /> {/* Ícone de perfil */}
+              <FaUser className="text-1xl" />
             </button>
-
-            {/* Nome do usuário abaixo do ícone de perfil */}
             {userName && (
               <div className="text-sm text-white mt-1">{userName}</div>
             )}
-
             {dropdownOpen && (
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50">
                 <Link
@@ -101,15 +102,15 @@ const Navbar = () => {
         </div>
       </nav>
 
-      {/* Sidebar (menu hamburguer) */}
+      {/* Sidebar */}
       <div
+        ref={sidebarRef} // Referência para a sidebar
         className={`fixed top-0 left-0 w-64 h-full bg-gray-800 text-white transform ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } transition-transform duration-300 ease-in-out`}
       >
         <div className="flex justify-between items-center p-4">
           <span className="text-lg font-semibold"></span>
-          {/* Ícone de "X" para fechar o sidebar */}
           <button onClick={toggleSidebar} className="text-white text-2xl focus:outline-none">
             <FaTimes />
           </button>
