@@ -24,23 +24,31 @@ const DetalhesPaciente = () => {
         fetchPaciente();
     }, [id, token]);
 
+    const formatarCPF = (cpf) => {
+        return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+    };
+
+    const formatarTelefone = (telefone) => {
+        return telefone.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    };
+
     if (!paciente) return <p>Carregando...</p>;
 
     return (
         <div className="min-h-screen p-10 flex flex-col items-center bg-gray-100">
-            <div className="w-full max-w-4xl bg-white p-10 rounded-lg shadow-lg"> {/* Ajuste aqui */}
+            <div className="w-full max-w-4xl bg-white p-10 rounded-lg shadow-lg">
                 <h1 className="text-4xl font-bold text-center mb-8 text-blue-600">Detalhes do Paciente</h1>
-                <div className="grid grid-cols-2 gap-6"> {/* Aumente o gap para mais espaço */}
+                <div className="grid grid-cols-2 gap-6">
                     <div>
                         <p className="text-lg text-gray-700"><strong>Nome:</strong> {paciente.nome} {paciente.sobrenome}</p>
                         <p className="text-lg text-gray-700"><strong>Data de Nascimento:</strong> {format(new Date(paciente.nascimento), 'dd-MM-yyyy', { locale: ptBR })}</p>
-                        <p className="text-lg text-gray-700"><strong>CPF:</strong> {paciente.cpf}</p>
+                        <p className="text-lg text-gray-700"><strong>CPF:</strong> {formatarCPF(paciente.cpf)}</p>
                         <p className="text-lg text-gray-700"><strong>Gênero:</strong> {paciente.genero}</p>
                     </div>
                     <div>
                         <p className="text-lg text-gray-700"><strong>Email:</strong> {paciente.email}</p>
                         <p className="text-lg text-gray-700"><strong>Profissão:</strong> {paciente.profissao}</p>
-                        <p className="text-lg text-gray-700"><strong>Telefone:</strong> {paciente.telefone}</p>
+                        <p className="text-lg text-gray-700"><strong>Telefone:</strong> {formatarTelefone(paciente.telefone)}</p>
                         <p className="text-lg text-gray-700"><strong>Data de Cadastro:</strong> {format(new Date(paciente.created_at), 'dd-MM-yyyy', { locale: ptBR })}</p>
                     </div>
                 </div>

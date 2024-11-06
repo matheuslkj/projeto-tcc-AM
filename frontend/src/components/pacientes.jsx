@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
 import axios from 'axios';
+import InputMask from 'react-input-mask';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Swal from 'sweetalert2';
@@ -55,16 +56,22 @@ const Pacientes = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+
+    
+    // Remover a máscara do CPF antes de enviar ao backend
+ 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isEditing) {
-        await axios.put(`http://127.0.0.1:8000/api/v1/pacientes/${idEditando}`, formData, {
+        await axios.put(`http://127.0.0.1:8000/api/v1/pacientes/${idEditando}`, formDataToSend, {
           headers: { Authorization: `Bearer ${token}` }
         });
         Swal.fire('Sucesso!', 'Paciente atualizado com sucesso!', 'success');
       } else {
-        await axios.post('http://127.0.0.1:8000/api/v1/pacientes', formData, {
+        await axios.post('http://127.0.0.1:8000/api/v1/pacientes', formDataToSend, {
           headers: { Authorization: `Bearer ${token}` }
         });
         Swal.fire('Sucesso!', 'Novo paciente cadastrado com sucesso!', 'success');
@@ -77,6 +84,11 @@ const Pacientes = () => {
       console.error('Erro ao salvar paciente:', erro.response?.data);
       Swal.fire('Erro!', 'Ocorreu um erro ao salvar o paciente.', 'error');
     }
+  };
+
+  const formDataToSend = {
+    ...formData,
+    cpf: formData.cpf.replace(/\D/g, '')  // Remove tudo que não for número
   };
 
   const limparFormulario = () => {
@@ -241,7 +253,14 @@ const Pacientes = () => {
                 </div>
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">CPF</label>
-                  <input name="cpf" value={formData.cpf} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+                  <InputMask
+                mask="999.999.999-99"
+                name="cpf"
+                value={formData.cpf}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border rounded-lg"
+                required
+              />
                 </div>
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">Email</label>
