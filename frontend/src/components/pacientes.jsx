@@ -25,7 +25,8 @@ const Pacientes = () => {
     logradouro: '',
     numero: '',
     bairro: '',
-    cidade_estado: '',
+    cidade: '',
+    estado: '',
     complemento: ''
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -54,12 +55,35 @@ const Pacientes = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+
+    if (name === 'cep' && value.length === 8) {
+      fetchAddress(value);
+    }
+
   };
 
+  const fetchAddress = async (cep) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = response.data;
 
-    
-    // Remover a máscara do CPF antes de enviar ao backend
- 
+      if (!data.erro) {
+        setFormData({
+          ...formData,
+          logradouro: data.logradouro || '',
+          bairro: data.bairro || '',
+          cidade: data.localidade || '',
+          estado: data.uf || ''
+        });
+      } else {
+        Swal.fire('Erro!', 'CEP não encontrado.', 'error');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar o endereço:', error);
+      Swal.fire('Erro!', 'Não foi possível buscar o endereço. Verifique o CEP e tente novamente.', 'error');
+    }
+  };
+
 
 
   const handleSubmit = async (e) => {
@@ -88,7 +112,7 @@ const Pacientes = () => {
 
   const formDataToSend = {
     ...formData,
-    cpf: formData.cpf.replace(/\D/g, '')  // Remove tudo que não for número
+    cpf: formData.cpf.replace(/\D/g, '')
   };
 
   const limparFormulario = () => {
@@ -106,7 +130,8 @@ const Pacientes = () => {
       logradouro: '',
       numero: '',
       bairro: '',
-      cidade_estado: '',
+      cidade: '',
+      estado: '',
       complemento: ''
     });
   };
@@ -232,7 +257,7 @@ const Pacientes = () => {
         </div>
       </div>
 
-      {/* Modal */}
+
       {showModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50" onClick={() => setShowModal(false)}>
           <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg overflow-y-auto max-h-screen" onClick={(e) => e.stopPropagation()}>
@@ -254,13 +279,13 @@ const Pacientes = () => {
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">CPF</label>
                   <InputMask
-                mask="999.999.999-99"
-                name="cpf"
-                value={formData.cpf}
-                onChange={handleInputChange}
-                className="w-full px-4 py-2 border rounded-lg"
-                required
-              />
+                    mask="999.999.999-99"
+                    name="cpf"
+                    value={formData.cpf}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-2 border rounded-lg"
+                    required
+                  />
                 </div>
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">Email</label>
@@ -304,8 +329,12 @@ const Pacientes = () => {
                   <input type="text" name="bairro" value={formData.bairro} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
                 </div>
                 <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Cidade e Estado</label>
-                  <input type="text" name="cidade_estado" value={formData.cidade_estado} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+                  <label className="block text-gray-700 font-medium mb-1">Cidade</label>
+                  <input type="text" name="cidade" value={formData.cidade} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+                </div>
+                <div className="col-span-1">
+                  <label className="block text-gray-700 font-medium mb-1">Estado</label>
+                  <input type="text" name="estado" value={formData.estado} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-gray-700 font-medium mb-1">Complemento</label>

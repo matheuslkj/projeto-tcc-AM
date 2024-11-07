@@ -58,7 +58,8 @@ const DetalhesPaciente = () => {
                     <p className="text-lg text-gray-700"><strong>CEP:</strong> {paciente.cep}</p>
                     <p className="text-lg text-gray-700"><strong>Logradouro:</strong> {paciente.logradouro}, {paciente.numero}</p>
                     <p className="text-lg text-gray-700"><strong>Bairro:</strong> {paciente.bairro}</p>
-                    <p className="text-lg text-gray-700"><strong>Cidade/Estado:</strong> {paciente.cidade_estado}</p>
+                    <p className="text-lg text-gray-700"><strong>Cidade:</strong> {paciente.cidade}</p>
+                    <p className="text-lg text-gray-700"><strong>Estado:</strong> {paciente.estado}</p>
                     {paciente.complemento && (
                         <p className="text-lg text-gray-700"><strong>Complemento:</strong> {paciente.complemento}</p>
                     )}

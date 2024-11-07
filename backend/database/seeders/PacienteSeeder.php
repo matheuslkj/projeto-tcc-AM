@@ -28,7 +28,8 @@ class PacienteSeeder extends Seeder
             'logradouro' => 'Rua A',
             'numero' => '123',
             'bairro' => 'Centro',
-            'cidade_estado' => 'São Paulo-SP',
+            'cidade' => 'São Paulo',
+            'estado' => 'SP',
             'complemento' => '',
         ]);
 
@@ -46,7 +47,8 @@ class PacienteSeeder extends Seeder
             'logradouro' => 'Avenida B',
             'numero' => '456',
             'bairro' => 'Jardins',
-            'cidade_estado' => 'Rio de Janeiro-RJ',
+            'cidade' => 'Rio de Janeiro',
+            'estado' => 'Rio de Janeiro',
             'complemento' => 'Apto 12',
         ]);
 

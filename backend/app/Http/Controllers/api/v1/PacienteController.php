@@ -30,7 +30,8 @@ class PacienteController extends Controller
             'logradouro' => 'required|string',
             'numero' => 'required|string',
             'bairro' => 'required|string',
-            'cidade_estado' => 'required|string',
+            'cidade' => 'required|string',
+            'estado' => 'required|string',
             'complemento' => 'nullable|string',
         ]);
 
@@ -74,7 +75,8 @@ class PacienteController extends Controller
             'logradouro' => 'string',
             'numero' => 'string',
             'bairro' => 'string',
-            'cidade_estado' => 'string',
+            'cidade' => 'string',
+            'estado' => 'string',
             'complemento' => 'nullable|string',
         ]);
 

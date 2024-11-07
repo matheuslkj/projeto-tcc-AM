@@ -25,7 +25,8 @@ class Paciente extends Model
         'logradouro',
         'numero',
         'bairro',
-        'cidade_estado',
+        'cidade',
+        'estado', 
         'complemento',
         'data_cadastro',
     ];
