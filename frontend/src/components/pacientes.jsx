@@ -343,7 +343,7 @@ const Pacientes = () => {
               </div>
               <div className="flex justify-end mt-4">
                 <button type="button" onClick={() => setShowModal(false)} className="w-32 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Cancelar</button>
-                <button type="submit" className="w-32 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</button>
+                <button type="submit" className="w-32 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">{isEditing ? 'Salvar' : 'Cadastrar'}</button>
               </div>
             </form>
           </div>
