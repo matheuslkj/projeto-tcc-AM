@@ -8,8 +8,8 @@ const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [userName, setUserName] = useState('');
   const navigate = useNavigate();
-  const sidebarRef = useRef(null); // Referência para a sidebar
-  const dropdownRef = useRef(null); // Referência para o dropdown
+  const sidebarRef = useRef(null);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     const storedUserName = localStorage.getItem('userName') || sessionStorage.getItem('userName');
@@ -48,7 +48,6 @@ const Navbar = () => {
     }
   };
 
-  // Detectar clique fora da sidebar para fechá-la
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
@@ -73,7 +72,14 @@ const Navbar = () => {
           <FaBars />
         </button>
         <div className="text-xl font-bold"><Link to={"/"}>Logo</Link></div>
-        <div className="absolute right-20 mr-10 font-bold"><Link to={"/agendamentos"}>Agendar</Link></div>
+        <div className="absolute right-20 mr-10">
+          <Link 
+            to="/agendamentos" 
+            className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition duration-200 ease-in-out transform hover:-translate-y-1"
+          >
+            AGENDAR
+          </Link>
+        </div>
         <div className="space-x-4 hidden md:flex items-center">
           <div className="relative flex flex-col items-center" ref={dropdownRef}>
             <button 
