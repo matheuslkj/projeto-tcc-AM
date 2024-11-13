@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaEdit, FaTrash, FaPlus, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 const Procedimentos = () => {
   const [procedimentos, setProcedimentos] = useState([]);
@@ -16,6 +17,7 @@ const Procedimentos = () => {
   const [editando, setEditando] = useState(false);
   const [idEditando, setIdEditando] = useState(null);
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const navigate = useNavigate();
   const itensPorPagina = 10;
   const token = localStorage.getItem('token') || sessionStorage.getItem('token');
 
@@ -113,6 +115,10 @@ const Procedimentos = () => {
     });
   };
 
+  const handleClickProcedimento = (id) => {
+    navigate(`/procedimentos/${id}`);
+  };
+
   const procedimentosFiltrados = procedimentos.filter(procedimento =>
     procedimento.nome.toLowerCase().includes(busca.toLowerCase())
   );
@@ -127,7 +133,11 @@ const Procedimentos = () => {
         <div
           id="modal-overlay"
           className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50"
-          onClick={() => setMostrarModal(false)}
+          onClick={(e) => {
+            if (e.target.id === 'modal-overlay') {
+              setMostrarModal(false);
+            }
+          }}
         >
           <div
             className="bg-white p-6 rounded shadow-lg w-full max-w-lg"
@@ -195,7 +205,7 @@ const Procedimentos = () => {
         </div>
       )}
 
-      <div className="w-full max-w-4xl  shadow-lg rounded-lg">
+      <div className="w-full max-w-4xl">
         <div className="p-4 flex justify-between items-center">
           <input
             type="text"
@@ -226,9 +236,9 @@ const Procedimentos = () => {
               {paginatedData.length > 0 ? (
                 paginatedData.map((procedimento) => (
                   <tr key={procedimento.id} className="border-t hover:bg-gray-200">
-                    <td className="px-4 py-2 text-sm text-gray-600">{procedimento.nome}</td>
-                    <td className="px-4 py-2 text-sm text-gray-600">{procedimento.descricao}</td>
-                    <td className="px-4 py-2 text-sm text-gray-600">{procedimento.objetivo}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600" onClick={() => handleClickProcedimento(procedimento.id)} >{procedimento.nome}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600" onClick={() => handleClickProcedimento(procedimento.id)} >{procedimento.descricao}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600" onClick={() => handleClickProcedimento(procedimento.id)} >{procedimento.objetivo}</td>
                     <td className="px-4 py-2 text-center flex justify-center items-center space-x-4">
                       <button onClick={() => handleEditar(procedimento)} className="text-blue-500 hover:text-blue-700">
                         <FaEdit />
