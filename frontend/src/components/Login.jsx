@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaEye, FaEyeSlash } from 'react-icons/fa'; // Ícones para mostrar/esconder senha
-import InputMask from 'react-input-mask'; // Importando a biblioteca de máscara
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import InputMask from 'react-input-mask';
+import Swal from 'sweetalert2';
 
 const Login = () => {
   const [cpf, setCpf] = useState('');
@@ -28,26 +29,34 @@ const Login = () => {
       if (response.ok) {
         const data = await response.json();
         const token = data.token;
-        const userName = data.user.name; // Capturando o nome do usuário
+        const userName = data.user.name;
 
-        // Armazenar o token e o nome do usuário no localStorage ou sessionStorage
         if (manterConectado) {
           localStorage.setItem('token', token);
-          localStorage.setItem('userName', userName); // Armazenando o nome
+          localStorage.setItem('userName', userName);
         } else {
           sessionStorage.setItem('token', token);
-          sessionStorage.setItem('userName', userName); // Armazenando o nome
+          sessionStorage.setItem('userName', userName);
         }
+        
+          navigate('/');
 
-        // Redireciona para a página de listagem de pacientes após o login
-        navigate('/');
       } else {
-        // Tratar erro de login
-        alert('Erro ao fazer login. Verifique suas credenciais.');
+        Swal.fire({
+          title: 'Erro ao fazer login',
+          text: 'Verifique suas credenciais e tente novamente.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
       }
     } catch (error) {
       console.error('Erro durante o login:', error);
-      alert('Erro de conexão com o servidor.');
+      Swal.fire({
+        title: 'Erro de Conexão',
+        text: 'Erro de conexão com o servidor. Tente novamente mais tarde.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
     }
   };
 
@@ -57,7 +66,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex">
-      {/* Esquerda: Formulário de Login */}
       <div className="w-1/2 flex flex-col justify-center items-center bg-white p-8">
         <h1 className="text-3xl font-bold mb-6">Login</h1>
         <form onSubmit={handleLogin} className="w-full max-w-md">
@@ -66,7 +74,7 @@ const Login = () => {
               CPF
             </label>
             <InputMask
-              mask="999.999.999-99" // Máscara de CPF
+              mask="999.999.999-99"
               value={cpf}
               onChange={(e) => setCpf(e.target.value)}
             >
@@ -130,7 +138,6 @@ const Login = () => {
         </form>
       </div>
 
-      {/* Direita: Imagem de saúde usando URL externa */}
       <div className="w-1/2">
         <img
           src="https://blog.allcare.com.br/wp-content/uploads/2023/09/fisio.jpg"
