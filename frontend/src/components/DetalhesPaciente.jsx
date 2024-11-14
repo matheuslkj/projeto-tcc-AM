@@ -73,7 +73,8 @@ const DetalhesPaciente = () => {
                     <ul className="space-y-4 mt-4">
                         {paciente.agendamento.map((atendimento) => (
                             <li key={atendimento.id} className="p-4 border rounded-lg shadow-md bg-gray-50">
-                                <p className="text-lg"><strong>Data:</strong> {format(new Date(atendimento.data_atendimento), 'dd-MM-yyyy', { locale: ptBR })}</p>
+                                <p className="text-lg"><strong>Data:</strong> {format(new Date(new Date(atendimento.data_atendimento).setHours(new Date(atendimento.data_atendimento).getHours() + 3)), 'dd-MM-yyyy', { locale: ptBR })}</p>
+
                                 <p className="text-lg"><strong>Hora:</strong> {format(parse(atendimento.hora_atendimento, 'HH:mm:ss', new Date()), 'HH:mm')}</p>
                                 <p className="text-lg"><strong>Status:</strong> {atendimento.status}</p>
                                 <p className="text-lg"><strong>Observações:</strong> {atendimento.historico || 'Nenhuma observação'}</p>
