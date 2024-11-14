@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
 const Agendamentos = () => {
-    const { id } = useParams(); // Pega o ID do agendamento da URL
+    const { id } = useParams();
     const navigate = useNavigate();
 
     const [pacienteId, setPacienteId] = useState('');
@@ -17,7 +17,7 @@ const Agendamentos = () => {
     useEffect(() => {
         buscarPacientes();
         if (id) {
-            buscarAgendamento(); // Carrega o agendamento para edição
+            buscarAgendamento();
         }
     }, [id]);
 
@@ -29,7 +29,6 @@ const Agendamentos = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            
             const pacientesOrdenados = resposta.data.sort((a, b) => a.nome.localeCompare(b.nome));
             setPacientes(pacientesOrdenados);
         } catch (erro) {
@@ -62,6 +61,15 @@ const Agendamentos = () => {
         const token = localStorage.getItem('token') || sessionStorage.getItem('token');
         const formattedHoraAtendimento = horaAtendimento ? horaAtendimento.slice(0, 5) : '';
 
+        // Combina a data e a hora para a validação
+        const dataHoraAtendimento = new Date(`${dataAtendimento}T${formattedHoraAtendimento}`);
+        const agora = new Date();
+
+        if (dataHoraAtendimento < agora) {
+            Swal.fire('Data ou Hora Inválida', 'A data e a hora do agendamento devem ser futuras.', 'warning');
+            return;
+        }
+
         const novoAgendamento = {
             id_paciente: pacienteId,
             data_atendimento: dataAtendimento,
@@ -72,7 +80,6 @@ const Agendamentos = () => {
 
         try {
             if (id) {
-                // Atualiza o agendamento existente
                 await axios.put(`http://127.0.0.1:8000/api/v1/agendamentos/${id}`, novoAgendamento, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -81,7 +88,6 @@ const Agendamentos = () => {
                 });
                 Swal.fire('Sucesso!', 'Agendamento atualizado com sucesso!', 'success');
             } else {
-                // Cria um novo agendamento
                 await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', novoAgendamento, {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -90,7 +96,7 @@ const Agendamentos = () => {
                 });
                 Swal.fire('Sucesso!', 'Novo agendamento criado com sucesso!', 'success');
             }
-            navigate('/'); // Redireciona para a listagem de agendamentos
+            navigate('/');
         } catch (error) {
             console.error('Erro ao salvar agendamento:', error);
             Swal.fire('Erro!', 'Ocorreu um erro ao salvar o agendamento. Tente novamente.', 'error');
