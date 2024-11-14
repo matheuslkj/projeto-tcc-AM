@@ -14,11 +14,16 @@ class Agendamento extends Model
         'data_atendimento',
         'hora_atendimento',
         'historico',
-        'status'
+        'status',
+        'id_procedimento'
     ];
 
     public function paciente()
     {
         return $this->belongsTo(Paciente::class, 'id_paciente');
+    }
+    public function procedimento()
+    {
+        return $this->belongsTo(Procedimento::class, 'id_procedimento');
     }
 }

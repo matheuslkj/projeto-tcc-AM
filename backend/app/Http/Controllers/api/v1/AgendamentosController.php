@@ -33,7 +33,8 @@ class AgendamentosController extends Controller
             'data_atendimento' => 'required|date',
             'hora_atendimento' => 'required|date_format:H:i',
             'historico' => 'nullable|string',
-            'status' => 'required|in:PENDENTE,REALIZADO'
+            'status' => 'required|in:PENDENTE,REALIZADO',
+            'id_procedimento' => 'required|exists:procedimentos,id'
         ]);
 
         $agendamento = Agendamento::create([
@@ -42,6 +43,7 @@ class AgendamentosController extends Controller
             'hora_atendimento' => $request->hora_atendimento,
             'historico' => $request->historico,
             'status' => $request->status,
+            'id_procedimento' => $request->id_procedimento
         ]);
 
         return response()->json($agendamento, 201);
@@ -84,7 +86,8 @@ class AgendamentosController extends Controller
             'data_atendimento' => 'required|date',
             'hora_atendimento' => 'required|date_format:H:i',
             'historico' => 'nullable|string',
-            'status' => 'required|in:PENDENTE,REALIZADO'
+            'status' => 'required|in:PENDENTE,REALIZADO',
+            'id_procedimento' => 'required|exists:procedimentos,id'
         ]);
 
         $agendamento->update($validated);
