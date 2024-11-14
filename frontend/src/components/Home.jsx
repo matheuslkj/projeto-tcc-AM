@@ -112,24 +112,6 @@ const Home = () => {
         });
     };
 
-    const handleFecharModal = () => {
-        setMostrarModal(false);
-    };
-
-    const handleSubmitFormulario = async (dadosPaciente) => {
-        try {
-            await axios.post('http://127.0.0.1:8000/api/v1/agendamentos', dadosPaciente, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setMostrarModal(false);
-            buscarAgendamentos();
-        } catch (erro) {
-            console.error('Erro ao salvar agendamento:', erro);
-        }
-    };
-
     const renderTabela = (titulo, agendamentos, pagina, setPagina, ordenacao, tipoTabela) => {
         const inicio = (pagina - 1) * itensPorPagina;
         const paginatedData = agendamentos.slice(inicio, inicio + itensPorPagina);
@@ -143,6 +125,9 @@ const Home = () => {
                         <tr className="bg-gray-100">
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
                                 Nome <FaSort onClick={() => ordenarAgendamentos('nome', tipoTabela)} className="inline cursor-pointer" />
+                            </th>
+                            <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
+                                Procedimento
                             </th>
                             <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">
                                 Data do Atendimento <FaSort onClick={() => ordenarAgendamentos('data_atendimento', tipoTabela)} className="inline cursor-pointer" />
@@ -159,6 +144,7 @@ const Home = () => {
                             paginatedData.map((agendamento) => (
                                 <tr key={agendamento.id} className="border-t hover:bg-gray-200">
                                     <td className="px-4 py-2 text-sm text-gray-600">{agendamento.paciente?.nome} {agendamento.paciente?.sobrenome}</td>
+                                    <td className="px-4 py-2 text-sm text-gray-600">{agendamento.procedimento?.nome}</td>
                                     <td className="px-4 py-2 text-sm text-gray-600">
                                         {agendamento.data_atendimento
                                             ? format(new Date(agendamento.data_atendimento + 'T00:00:00'), 'dd-MM-yyyy', { locale: ptBR })
@@ -187,7 +173,7 @@ const Home = () => {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="5" className="px-4 py-2 text-sm text-gray-600 text-center">
+                                <td colSpan="6" className="px-4 py-2 text-sm text-gray-600 text-center">
                                     Nenhum agendamento encontrado
                                 </td>
                             </tr>

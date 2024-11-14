@@ -12,10 +12,13 @@ const Agendamentos = () => {
     const [horaAtendimento, setHoraAtendimento] = useState('');
     const [historico, setHistorico] = useState('');
     const [status, setStatus] = useState('PENDENTE');
+    const [procedimentoId, setProcedimentoId] = useState('');
     const [pacientes, setPacientes] = useState([]);
+    const [procedimentos, setProcedimentos] = useState([]);
 
     useEffect(() => {
         buscarPacientes();
+        buscarProcedimentos();
         if (id) {
             buscarAgendamento();
         }
@@ -35,6 +38,21 @@ const Agendamentos = () => {
             console.error('Erro ao buscar pacientes:', erro);
         }
     };
+
+    const buscarProcedimentos = async () => {
+        try {
+            const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+            const resposta = await axios.get('http://127.0.0.1:8000/api/v1/procedimentos', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const procedimentosOrdenados = resposta.data.sort((a, b) => a.nome.localeCompare(b.nome));
+            setProcedimentos(procedimentosOrdenados);
+        } catch (erro) {
+            console.error('Erro ao buscar procedimentos:', erro);
+        }
+    };
     
     const buscarAgendamento = async () => {
         try {
@@ -50,6 +68,7 @@ const Agendamentos = () => {
             setHoraAtendimento(agendamento.hora_atendimento);
             setHistorico(agendamento.historico);
             setStatus(agendamento.status);
+            setProcedimentoId(agendamento.id_procedimento || '');
         } catch (erro) {
             console.error('Erro ao buscar agendamento:', erro);
         }
@@ -58,20 +77,25 @@ const Agendamentos = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-        const formattedHoraAtendimento = horaAtendimento ? horaAtendimento.slice(0, 5) : '';
+        // Validação de data e hora
+        const dataHoraAtual = new Date();
+        const dataHoraSelecionada = new Date(`${dataAtendimento}T${horaAtendimento}`);
 
-        // Combina a data e a hora para a validação
-        const dataHoraAtendimento = new Date(`${dataAtendimento}T${formattedHoraAtendimento}`);
-        const agora = new Date();
-
-        if (dataHoraAtendimento < agora) {
-            Swal.fire('Data ou Hora Inválida', 'A data e a hora do agendamento devem ser futuras.', 'warning');
+        if (dataHoraSelecionada < dataHoraAtual) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Data e hora inválidas',
+                text: 'A data e hora devem ser maiores que o momento atual.',
+            });
             return;
         }
 
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+        const formattedHoraAtendimento = horaAtendimento ? horaAtendimento.slice(0, 5) : '';
+
         const novoAgendamento = {
             id_paciente: pacienteId,
+            id_procedimento: procedimentoId,
             data_atendimento: dataAtendimento,
             hora_atendimento: formattedHoraAtendimento,
             historico: historico,
@@ -123,6 +147,26 @@ const Agendamentos = () => {
                             {pacientes.map(paciente => (
                                 <option key={paciente.id} value={paciente.id}>
                                     {paciente.nome} {paciente.sobrenome}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="block text-gray-700 font-bold mb-2" htmlFor="procedimento">
+                            Procedimento
+                        </label>
+                        <select
+                            id="procedimento"
+                            value={procedimentoId}
+                            onChange={(e) => setProcedimentoId(e.target.value)}
+                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                            required
+                        >
+                            <option value="" disabled>Selecione um procedimento</option>
+                            {procedimentos.map(procedimento => (
+                                <option key={procedimento.id} value={procedimento.id}>
+                                    {procedimento.nome}
                                 </option>
                             ))}
                         </select>
