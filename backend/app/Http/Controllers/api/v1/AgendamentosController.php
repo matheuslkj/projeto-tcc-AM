@@ -15,7 +15,7 @@ class AgendamentosController extends Controller
      */
     public function index()
     {
-        $agendamentos = Agendamento::with('Paciente')->get();
+        $agendamentos = Agendamento::with('paciente', 'procedimento')->get();
 
         return response()->json($agendamentos);
     }
