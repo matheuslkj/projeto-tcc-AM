@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Footer from './Footer';
 import { FaEdit, FaTrash, FaPlus, FaSort } from 'react-icons/fa';
 import axios from 'axios';
 import InputMask from 'react-input-mask';
@@ -189,168 +190,170 @@ const Pacientes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="max-w-6xl mx-auto mt-8 p-4">
-        <div className="flex justify-between items-center mb-4">
-          <input
-            type="text"
-            placeholder="Buscar paciente"
-            className="border rounded-lg px-4 py-2 w-1/2"
-            value={busca}
-            onChange={(e) => setBusca(e.target.value)}
-          />
-          <button
-            onClick={() => {
-              setShowModal(true);
-              setIsEditing(false);
-              limparFormulario();
-            }}
-            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-          >
-            <FaPlus className="mr-2" /> Adicionar Paciente
-          </button>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-grow">
+        <div className="max-w-6xl mx-auto mt-8 p-4">
+          <div className="flex justify-between items-center mb-4">
+            <input
+              type="text"
+              placeholder="Buscar paciente"
+              className="border rounded-lg px-4 py-2 w-1/2"
+              value={busca}
+              onChange={(e) => setBusca(e.target.value)}
+            />
+            <button
+              onClick={() => {
+                setShowModal(true);
+                setIsEditing(false);
+                limparFormulario();
+              }}
+              className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            >
+              <FaPlus className="mr-2" /> Adicionar Paciente
+            </button>
+          </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-200">
-            <thead>
-              <tr className="bg-gray-100">
-                <th onClick={() => ordenarPacientes('nome')} className="px-4 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer">
-                  Nome <FaSort />
-                </th>
-                <th onClick={() => ordenarPacientes('created_at')} className="px-4 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer">
-                  Data Cadastro <FaSort />
-                </th>
-                <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Opções</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pacientesFiltrados.map((paciente) => (
-                <tr key={paciente.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-2 text-black cursor-pointer" onClick={() => navigate(`/paciente/${paciente.id}`)}>
-                    {paciente.nome} {paciente.sobrenome}
-                  </td>
-                  <td className="px-4 py-2">{format(new Date(paciente.created_at), 'dd-MM-yyyy', { locale: ptBR })}</td>
-                  <td className="px-4 py-2 text-center flex justify-center space-x-4">
-                    <button onClick={() => handleEditar(paciente)} className="text-blue-500 hover:text-blue-700">
-                      <FaEdit />
-                    </button>
-                    <button onClick={() => handleExcluir(paciente.id)} className="text-red-500 hover:text-red-700">
-                      <FaTrash />
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th onClick={() => ordenarPacientes('nome')} className="px-4 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer">
+                    Nome <FaSort />
+                  </th>
+                  <th onClick={() => ordenarPacientes('created_at')} className="px-4 py-2 text-left text-sm font-medium text-gray-700 cursor-pointer">
+                    Data Cadastro <FaSort />
+                  </th>
+                  <th className="px-4 py-2 text-center text-sm font-medium text-gray-700">Opções</th>
                 </tr>
+              </thead>
+              <tbody>
+                {pacientesFiltrados.map((paciente) => (
+                  <tr key={paciente.id} className="border-t hover:bg-gray-50">
+                    <td className="px-4 py-2 text-black cursor-pointer" onClick={() => navigate(`/paciente/${paciente.id}`)}>
+                      {paciente.nome} {paciente.sobrenome}
+                    </td>
+                    <td className="px-4 py-2">{format(new Date(paciente.created_at), 'dd-MM-yyyy', { locale: ptBR })}</td>
+                    <td className="px-4 py-2 text-center flex justify-center space-x-4">
+                      <button onClick={() => handleEditar(paciente)} className="text-blue-500 hover:text-blue-700">
+                        <FaEdit />
+                      </button>
+                      <button onClick={() => handleExcluir(paciente.id)} className="text-red-500 hover:text-red-700">
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="flex justify-center items-center mt-4 space-x-2">
+              {[...Array(totalPaginas).keys()].map(numero => (
+                <button
+                  key={numero + 1}
+                  onClick={() => handlePaginaClick(numero + 1)}
+                  className={`px-3 py-1 rounded ${paginaAtual === numero + 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
+                >
+                  {numero + 1}
+                </button>
               ))}
-            </tbody>
-          </table>
-          <div className="flex justify-center items-center mt-4 space-x-2">
-            {[...Array(totalPaginas).keys()].map(numero => (
-              <button
-                key={numero + 1}
-                onClick={() => handlePaginaClick(numero + 1)}
-                className={`px-3 py-1 rounded ${paginaAtual === numero + 1 ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-700'}`}
-              >
-                {numero + 1}
-              </button>
-            ))}
+            </div>
           </div>
         </div>
       </div>
-
-
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50" onClick={() => setShowModal(false)}>
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg overflow-y-auto max-h-screen" onClick={(e) => e.stopPropagation()}>
-            <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Editar Paciente' : 'Cadastrar Paciente'}</h2>
-            <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Nome</label>
-                  <input type="text" name="nome" value={formData.nome} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Sobrenome</label>
-                  <input type="text" name="sobrenome" value={formData.sobrenome} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Data de Nascimento</label>
-                  <input type="date" name="nascimento" value={formData.nascimento} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">CPF</label>
-                  <InputMask
-                    mask="999.999.999-99"
-                    name="cpf"
-                    value={formData.cpf}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-2 border rounded-lg"
-                    required
-                  />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Email</label>
-                  <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Profissão</label>
-                  <input type="text" name="profissao" value={formData.profissao} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Telefone</label>
-                  <input type="text" name="telefone" value={formData.telefone} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">CEP</label>
-                  <input type="text" name="cep" value={formData.cep} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Logradouro</label>
-                  <input type="text" name="logradouro" value={formData.logradouro} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Número</label>
-                  <input type="text" name="numero" value={formData.numero} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Gênero</label>
-                  <select name="genero" value={formData.genero} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required>
-                    <option value="">Selecione</option>
-                    <option value="Masculino">Masculino</option>
-                    <option value="Feminino">Feminino</option>
-                    <option value="Outro">Outro</option>
-                  </select>
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Sintoma</label>
-                  <input type="text" name="sintomas" value={formData.sintomas} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Bairro</label>
-                  <input type="text" name="bairro" value={formData.bairro} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Cidade</label>
-                  <input type="text" name="cidade" value={formData.cidade} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-gray-700 font-medium mb-1">Estado</label>
-                  <input type="text" name="estado" value={formData.estado} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-gray-700 font-medium mb-1">Complemento</label>
-                  <input type="text" name="complemento" value={formData.complemento} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
-                </div>
-              </div>
-              <div className="flex justify-end mt-4">
-                <button type="button" onClick={() => setShowModal(false)} className="w-32 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Cancelar</button>
-                <button type="submit" className="w-32 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">{isEditing ? 'Salvar' : 'Cadastrar'}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
+  {
+    showModal && (
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50" onClick={() => setShowModal(false)}>
+        <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg overflow-y-auto max-h-screen" onClick={(e) => e.stopPropagation()}>
+          <h2 className="text-2xl font-bold mb-4">{isEditing ? 'Editar Paciente' : 'Cadastrar Paciente'}</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Nome</label>
+                <input type="text" name="nome" value={formData.nome} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Sobrenome</label>
+                <input type="text" name="sobrenome" value={formData.sobrenome} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Data de Nascimento</label>
+                <input type="date" name="nascimento" value={formData.nascimento} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">CPF</label>
+                <InputMask
+                  mask="999.999.999-99"
+                  name="cpf"
+                  value={formData.cpf}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-2 border rounded-lg"
+                  required
+                />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Email</label>
+                <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Profissão</label>
+                <input type="text" name="profissao" value={formData.profissao} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Telefone</label>
+                <input type="text" name="telefone" value={formData.telefone} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">CEP</label>
+                <input type="text" name="cep" value={formData.cep} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Logradouro</label>
+                <input type="text" name="logradouro" value={formData.logradouro} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Número</label>
+                <input type="text" name="numero" value={formData.numero} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Gênero</label>
+                <select name="genero" value={formData.genero} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required>
+                  <option value="">Selecione</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                  <option value="Outro">Outro</option>
+                </select>
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Sintoma</label>
+                <input type="text" name="sintomas" value={formData.sintomas} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Bairro</label>
+                <input type="text" name="bairro" value={formData.bairro} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Cidade</label>
+                <input type="text" name="cidade" value={formData.cidade} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-1">
+                <label className="block text-gray-700 font-medium mb-1">Estado</label>
+                <input type="text" name="estado" value={formData.estado} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" required />
+              </div>
+              <div className="col-span-2">
+                <label className="block text-gray-700 font-medium mb-1">Complemento</label>
+                <input type="text" name="complemento" value={formData.complemento} onChange={handleInputChange} className="w-full px-4 py-2 border rounded-lg" />
+              </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <button type="button" onClick={() => setShowModal(false)} className="w-32 bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600 mr-2">Cancelar</button>
+              <button type="submit" className="w-32 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">{isEditing ? 'Salvar' : 'Cadastrar'}</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )
+  }
 };
 
 export default Pacientes;

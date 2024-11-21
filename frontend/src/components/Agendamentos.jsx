@@ -128,7 +128,7 @@ const Agendamentos = () => {
     };
 
     return (
-        <div className="min-h-screen flex justify-center items-center bg-gray-100">
+        <div className="min-h-screen flex justify-center items-center bg-gray-100 m-10">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
                 <h1 className="text-2xl font-bold mb-6">{id ? 'Editar Agendamento' : 'Agendar Atendimento'}</h1>
                 <form onSubmit={handleSubmit}>
