@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Footer from './Footer';
 import { FaEdit, FaTrash, FaPlus, FaSort, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import axios from 'axios';
 import { format } from 'date-fns';
@@ -202,20 +203,22 @@ const Home = () => {
     };
 
     return (
-        <div className='min-h-screen flex flex-col items-center m-10'>
-            <div className="overflow-x-auto w-full max-w-4xl mb-8">
-                <div className="flex justify-between items-center mb-4">
-                    <input
-                        type="text"
-                        placeholder="Buscar paciente"
-                        className="border border-gray-300 rounded-lg px-4 py-2 w-1/2"
-                        value={busca}
-                        onChange={(e) => setBusca(e.target.value)}
-                    />
-                </div>
+        <div className="min-h-screen flex flex-col justify-between">
+            <div className="flex-grow">
+                <div className="overflow-x-auto w-full max-w-4xl mb-8 mx-auto">
+                    <div className="flex justify-between items-center mb-4 mt-10">
+                        <input
+                            type="text"
+                            placeholder="Buscar paciente"
+                            className="border border-gray-300 rounded-lg px-4 py-2 w-1/2"
+                            value={busca}
+                            onChange={(e) => setBusca(e.target.value)}
+                        />
+                    </div>
 
-                {renderTabela("Atendimentos de Hoje", agendamentosHoje, paginaHoje, setPaginaHoje, ordenacaoHoje, 'hoje')}
-                {renderTabela("Atendimentos de Outros Dias", agendamentosOutrosDias, paginaOutrosDias, setPaginaOutrosDias, ordenacaoOutrosDias, 'outrosDias')}
+                    {renderTabela("Atendimentos de Hoje", agendamentosHoje, paginaHoje, setPaginaHoje, ordenacaoHoje, 'hoje')}
+                    {renderTabela("Atendimentos de Outros Dias", agendamentosOutrosDias, paginaOutrosDias, setPaginaOutrosDias, ordenacaoOutrosDias, 'outrosDias')}
+                </div>
             </div>
 
             {mostrarModal && (
@@ -229,6 +232,8 @@ const Home = () => {
                     </div>
                 </div>
             )}
+
+            <Footer />
         </div>
     );
 };
