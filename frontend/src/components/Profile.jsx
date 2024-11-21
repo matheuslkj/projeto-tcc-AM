@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 const Profile = () => {
   const [name, setName] = useState('');
@@ -44,18 +45,39 @@ const Profile = () => {
         about,
       };
 
-      const response = await axios.put('http://127.0.0.1:8000/api/v1/user/profile', data, {
+      await axios.put('http://127.0.0.1:8000/api/v1/user/profile', data, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log('Resposta do backend:', response.data);
-      alert('Perfil salvo com sucesso!');
-      navigate('/');
+      // Atualiza o nome no localStorage ou sessionStorage
+      localStorage.setItem('userName', name);
+      sessionStorage.setItem('userName', name);
+
+      // Exibe alerta de sucesso com Swal
+      Swal.fire({
+        title: 'Sucesso!',
+        text: 'Seu perfil foi atualizado com sucesso.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3085d6',
+      }).then(() => {
+        // Redireciona para Home e recarrega a página
+        navigate('/');
+        window.location.reload();
+      });
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);
-      alert('Erro ao salvar o perfil. Verifique os campos e tente novamente.');
+
+      // Exibe alerta de erro com Swal
+      Swal.fire({
+        title: 'Erro!',
+        text: 'Ocorreu um erro ao salvar o perfil. Verifique os campos e tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#d33',
+      });
     }
   };
 
