@@ -232,7 +232,7 @@ const Pacientes = () => {
                   </td>
                   <td className="px-4 py-2">{format(new Date(paciente.created_at), 'dd-MM-yyyy', { locale: ptBR })}</td>
                   <td className="px-4 py-2 text-center flex justify-center space-x-4">
-                    <button onClick={() => handleEditar(paciente)} className="text-yellow-500 hover:text-yellow-700">
+                    <button onClick={() => handleEditar(paciente)} className="text-blue-500 hover:text-blue-700">
                       <FaEdit />
                     </button>
                     <button onClick={() => handleExcluir(paciente.id)} className="text-red-500 hover:text-red-700">
