@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 Route::group(['prefix' => 'v1'], function() {
 
     // Rotas públicas (login)
-    Route::post('/login', [UserController::class, 'login'])->name('login');
+    Route::post('/login', [UserController::class, 'login'])->name('login')->middleware('throttle:5,1');
 
     // Rotas protegidas com Sanctum
     Route::middleware('auth:sanctum')->group(function () {
