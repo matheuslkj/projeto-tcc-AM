@@ -138,7 +138,7 @@ const Navbar = () => {
         <ul className="p-6 space-y-4">
           <li>
             <Link to="/" className="text-lg font-semibold hover:underline" onClick={toggleSidebar}>
-              <img src="/logo.png" alt="Logo" className="h-8 w-auto mx-auto" />
+              <img src="/logo.png" alt="Logo" className="h-24 w-auto mx-auto" />
             </Link>
           </li>
 
