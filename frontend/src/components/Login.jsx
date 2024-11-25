@@ -9,16 +9,18 @@ const Login = () => {
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [manterConectado, setManterConectado] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
 
     try {
-      const response = await fetch('http://localhost:8000/api/v1/login', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/api/v1/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           cpf: cpf,
@@ -32,37 +34,57 @@ const Login = () => {
         const userName = data.user.name;
 
         if (manterConectado) {
-          localStorage.setItem('token', token);
-          localStorage.setItem('userName', userName);
+          localStorage.setItem("token", token);
+          localStorage.setItem("userName", userName);
         } else {
-          sessionStorage.setItem('token', token);
-          sessionStorage.setItem('userName', userName);
+          sessionStorage.setItem("token", token);
+          sessionStorage.setItem("userName", userName);
         }
-        
-          navigate('/');
 
+        setLoading(true);
+
+        navigate("/");
+      } else if (response.status === 429) {
+        Swal.fire({
+          icon: "error",
+          title: "Tentativas excedidas",
+          text: "Por favor, tente novamente após 5 minuto.",
+        });
       } else {
         Swal.fire({
-          title: 'Erro ao fazer login',
-          text: 'Verifique suas credenciais e tente novamente.',
-          icon: 'error',
-          confirmButtonText: 'OK'
+          title: "Erro ao fazer login",
+          text: "Verifique suas credenciais e tente novamente.",
+          icon: "error",
+          confirmButtonText: "OK",
         });
       }
     } catch (error) {
-      console.error('Erro durante o login:', error);
       Swal.fire({
-        title: 'Erro de Conexão',
-        text: 'Erro de conexão com o servidor. Tente novamente mais tarde.',
-        icon: 'error',
-        confirmButtonText: 'OK'
+        icon: "error",
+        title: "Erro no servidor",
+        text: "Não foi possível conectar ao servidor. Tente novamente mais tarde.",
       });
+    } finally {
+      setLoading(false); 
     }
   };
 
   const toggleMostrarSenha = () => {
     setMostrarSenha(!mostrarSenha);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-gray-900">
+        <div className="bg-gray-800 animate-pulse rounded-lg p-6 w-80">
+          <div className="h-12 bg-gray-700 rounded mb-4"></div>
+          <div className="h-10 bg-gray-700 rounded mb-4"></div>
+          <div className="h-10 bg-gray-700 rounded mb-4"></div>
+          <div className="h-12 bg-gray-700 rounded"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex">

@@ -10,7 +10,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 Route::group(['prefix' => 'v1'], function() {
 
     // Rotas públicas (login)
-    Route::post('/login', [UserController::class, 'login'])->name('login')->middleware('throttle:5,1');
+    Route::post('/login', [UserController::class, 'login'])->name('login')->middleware('throttle:3,5');
 
     // Rotas protegidas com Sanctum
     Route::middleware('auth:sanctum')->group(function () {
@@ -27,7 +27,7 @@ Route::group(['prefix' => 'v1'], function() {
     });
 
     // Rotas de recuperação de senha
-    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:20,1');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
     Route::post('/reset-password', [ForgotPasswordController::class, 'reset'])->name('password.update');
 
     Route::get('/password/reset', function () {
