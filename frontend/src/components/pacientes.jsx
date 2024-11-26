@@ -154,18 +154,44 @@ const Pacientes = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://127.0.0.1:8000/api/v1/pacientes/${id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+          // Verifica se o paciente possui agendamentos
+          const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+          const response = await axios.get(`http://127.0.0.1:8000/api/v1/pacientes/${id}/agendamentos`, {
+            headers: { Authorization: `Bearer ${token}` },
           });
-          Swal.fire('Excluído!', 'O paciente foi excluído com sucesso.', 'success');
-          fetchPacientes();
+
+          if (response.data.length > 0) {
+            // Paciente possui agendamentos
+            Swal.fire({
+              title: 'Erro!',
+              text: 'Não é possível excluir um paciente com agendamentos marcados.',
+              icon: 'error',
+              confirmButtonText: 'OK',
+              confirmButtonColor: '#d33',
+            });
+          } else {
+            // Paciente não possui agendamentos, prossegue com a exclusão
+            await axios.delete(`http://127.0.0.1:8000/api/v1/pacientes/${id}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+
+            Swal.fire('Excluído!', 'O paciente foi excluído com sucesso.', 'success');
+            fetchPacientes(); // Atualiza a lista de pacientes
+          }
         } catch (erro) {
-          console.error('Erro ao excluir paciente:', erro);
-          Swal.fire('Erro!', 'Ocorreu um erro ao excluir o paciente.', 'error');
+          console.error('Erro ao verificar ou excluir paciente:', erro);
+          Swal.fire({
+            title: 'Erro!',
+            text: 'Não é possível excluir um paciente com agendamentos marcados.',
+            icon: 'error',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#d33',
+          });
         }
       }
     });
   };
+
 
   const ordenarPacientes = (campo) => {
     const novaOrdem = ordenacao.ordem === 'asc' ? 'desc' : 'asc';

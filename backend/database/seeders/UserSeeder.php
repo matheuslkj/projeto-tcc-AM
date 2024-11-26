@@ -17,9 +17,9 @@ class UserSeeder extends Seeder
         
         User::create([
             'name' => 'João Silva',
-            'email' => 'theolkjlkj2@gmail.com',
-            'cpf' => '123.456.789-01',
-            'password' => bcrypt('senhaSegura123'),
+            'email' => 'alnprivado@gmail.com',
+            'cpf' => '123.456.789-02',
+            'password' => bcrypt('senhaSegura123@'),
             'specialty' => 'Fisioterapeuta',
             'about' => 'Profissional com experiência em reabilitação física.',
         ]);

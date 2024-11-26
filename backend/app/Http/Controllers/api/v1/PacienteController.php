@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api\v1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Agendamento;
 use App\Models\Paciente;
 use Illuminate\Http\Request;
 
@@ -87,12 +88,46 @@ class PacienteController extends Controller
 
     public function destroy($id)
     {
+        try {
+            // Verifique se o paciente existe
+            $paciente = Paciente::findOrFail($id);
+
+            // Verifique se o paciente tem agendamentos vinculados
+            $agendamentos = Agendamento::where('id_paciente', $id)->exists();
+
+            if ($agendamentos) {
+                return response()->json([
+                    'message' => 'Não é possível excluir um paciente com agendamentos vinculados.'
+                ], 400);
+            }
+
+            // Se não houver agendamentos, exclua o paciente
+            $paciente->delete();
+
+            return response()->json([
+                'message' => 'Paciente excluído com sucesso.'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Ocorreu um erro ao tentar excluir o paciente.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
+    public function getAgendamentos($id)
+    {
+        // Busca o paciente pelo ID
         $paciente = Paciente::find($id);
+
         if (!$paciente) {
             return response()->json(['message' => 'Paciente não encontrado'], 404);
         }
 
-        $paciente->delete();
-        return response()->json(['message' => 'Paciente excluído com sucesso'], 200);
+        // Retorna os agendamentos do paciente
+        $agendamentos = $paciente->agendamentos; // Certifique-se de que a relação 'agendamentos' existe no modelo Paciente
+        return response()->json($agendamentos);
     }
 }
