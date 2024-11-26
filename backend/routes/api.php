@@ -17,6 +17,7 @@ Route::group(['prefix' => 'v1'], function() {
         Route::apiResource('pacientes', PacienteController::class);
         Route::apiResource('procedimentos', ProcedimentoController::class);
         Route::apiResource('agendamentos', AgendamentosController::class);
+        Route::get('/pacientes/{id}/agendamentos', [PacienteController::class, 'getAgendamentos']);
 
         // Rotas de perfil de usuário
         Route::get('/user/profile', [UserController::class, 'profile']);
