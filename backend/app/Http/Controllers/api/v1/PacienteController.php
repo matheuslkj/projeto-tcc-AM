@@ -34,6 +34,9 @@ class PacienteController extends Controller
             'cidade' => 'required|string',
             'estado' => 'required|string',
             'complemento' => 'nullable|string',
+            'nome_responsavel' => 'nullable|required_if:nascimento,menor_de_idade|string|max:255',
+            'sobrenome_responsavel' => 'nullable|required_if:nascimento,menor_de_idade|string|max:255',
+            'cpf_responsavel' => 'nullable|required_if:nascimento,menor_de_idade|string|size:11',
         ]);
 
         $validated['cpf'] = preg_replace('/\D/', '', $validated['cpf']);
