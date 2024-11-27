@@ -28,10 +28,18 @@ const Pacientes = () => {
     bairro: '',
     cidade: '',
     estado: '',
-    complemento: ''
+    complemento: '',
+    nomeResponsavel: '',
+    sobrenomeResponsavel: '',
+    cpfResponsavel: '',
   });
+
+
+  const [isMenorDeIdade, setIsMenorDeIdade] = useState(false);
+
   const [isEditing, setIsEditing] = useState(false);
   const [idEditando, setIdEditando] = useState(null);
+  const [isMinor, setIsMinor] = useState(false); // Indica se o paciente é menor de idade
   const [ordenacao, setOrdenacao] = useState({ campo: 'nome', ordem: 'asc' });
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 10;
@@ -53,13 +61,42 @@ const Pacientes = () => {
     }
   };
 
+  // Função para calcular a idade e determinar se é menor de idade
+  const calcularIdade = (dataNascimento) => {
+    const hoje = new Date();
+    const nascimento = new Date(dataNascimento);
+    const idade = hoje.getFullYear() - nascimento.getFullYear();
+    const mes = hoje.getMonth() - nascimento.getMonth();
+    if (mes < 0 || (mes === 0 && hoje.getDate() < nascimento.getDate())) {
+      return idade - 1;
+    }
+    return idade;
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
 
+    if (name === 'nascimento') {
+      const idade = calcularIdade(value);
+      setIsMinor(idade < 18);
+    }
+
     if (name === 'cep' && value.length === 8) {
       fetchAddress(value);
     }
+  };
+
+  const checkIfMinor = (birthDate) => {
+    const today = new Date();
+    const birthDateObj = new Date(birthDate);
+    const age = today.getFullYear() - birthDateObj.getFullYear();
+    const monthDiff = today.getMonth() - birthDateObj.getMonth();
+    const dayDiff = today.getDate() - birthDateObj.getDate();
+
+    // Verifica se é menor de 18 anos
+    const isMinor = age < 18 || (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
+    setIsMinor(isMinor);
   };
 
   const fetchAddress = async (cep) => {
@@ -86,18 +123,39 @@ const Pacientes = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Limpa os CPFs removendo pontos e hífens
+    const cpfPaciente = formData.cpf.replace(/\D/g, '');
+    const cpfResponsavel = formData.cpfResponsavel.replace(/\D/g, '');
+
+    // Atualiza os dados com os CPFs limpos
+    const dataToSend = {
+      ...formData,
+      cpf: cpfPaciente,
+      cpfResponsavel: cpfResponsavel,
+    };
+
     try {
+      // Verifica se os campos do responsável são obrigatórios
+      if (isMinor && (!formData.nomeResponsavel || !formData.sobrenomeResponsavel || !formData.cpfResponsavel)) {
+        Swal.fire('Erro!', 'Os campos do responsável são obrigatórios para pacientes menores de idade.', 'error');
+        return;
+      }
+
       if (isEditing) {
-        await axios.put(`http://127.0.0.1:8000/api/v1/pacientes/${idEditando}`, formDataToSend, {
-          headers: { Authorization: `Bearer ${token}` }
+        // Atualiza um paciente existente
+        await axios.put(`http://127.0.0.1:8000/api/v1/pacientes/${idEditando}`, dataToSend, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         Swal.fire('Sucesso!', 'Paciente atualizado com sucesso!', 'success');
       } else {
-        await axios.post('http://127.0.0.1:8000/api/v1/pacientes', formDataToSend, {
-          headers: { Authorization: `Bearer ${token}` }
+        // Cadastra um novo paciente
+        await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dataToSend, {
+          headers: { Authorization: `Bearer ${token}` },
         });
         Swal.fire('Sucesso!', 'Novo paciente cadastrado com sucesso!', 'success');
       }
+
       setShowModal(false);
       fetchPacientes();
       limparFormulario();
@@ -108,10 +166,11 @@ const Pacientes = () => {
     }
   };
 
-  const formDataToSend = {
-    ...formData,
-    cpf: formData.cpf.replace(/\D/g, '')
-  };
+
+  // const formDataToSend = {
+  //   ...formData,
+  //   cpf: formData.cpf.replace(/\D/g, '')
+  // };
 
   const limparFormulario = () => {
     setFormData({
@@ -130,8 +189,12 @@ const Pacientes = () => {
       bairro: '',
       cidade: '',
       estado: '',
-      complemento: ''
+      complemento: '',
+      nomeResponsavel: '',
+      sobrenomeResponsavel: '',
+      cpfResponsavel: '',
     });
+    setIsMinor(false);
   };
 
   const handleEditar = (paciente) => {
@@ -348,6 +411,44 @@ const Pacientes = () => {
                     required
                   />
                 </div>
+                {isMinor && (
+                  <>
+                    <div className="col-span-1">
+                      <label>Nome do Responsável</label>
+                      <input
+                        type="text"
+                        name="nomeResponsavel"
+                        value={formData.nomeResponsavel}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg"
+                        required
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label>Sobrenome do Responsável</label>
+                      <input
+                        type="text"
+                        name="sobrenomeResponsavel"
+                        value={formData.sobrenomeResponsavel}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg"
+                        required
+                      />
+                    </div>
+                    <div className="col-span-1">
+                      <label>CPF do Responsável</label>
+                      <InputMask
+                        mask="999.999.999-99"
+                        name="cpfResponsavel"
+                        value={formData.cpfResponsavel}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-2 border rounded-lg"
+                        required
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="col-span-1">
                   <label className="block text-gray-700 font-medium mb-1">CPF</label>
                   <InputMask
@@ -432,7 +533,7 @@ const Pacientes = () => {
                     <option value="">Selecione</option>
                     <option value="Masculino">Masculino</option>
                     <option value="Feminino">Feminino</option>
-                    <option value="Outro">Outro</option>
+                    <option value="Prefiro não dizer">Prefiro não dizer</option>
                   </select>
                 </div>
                 <div className="col-span-1">

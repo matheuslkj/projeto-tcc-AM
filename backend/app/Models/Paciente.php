@@ -29,6 +29,9 @@ class Paciente extends Model
         'estado', 
         'complemento',
         'data_cadastro',
+        'nome_responsavel',
+        'sobrenome_responsavel',
+        'cpf_responsavel',
     ];
 
     public function agendamento(){
