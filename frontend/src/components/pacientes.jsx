@@ -244,10 +244,10 @@ const Pacientes = () => {
         } catch (erro) {
           console.error('Erro ao verificar ou excluir paciente:', erro);
           Swal.fire({
-            title: 'Erro!',
+            title: 'ATENÇÃO',
             text: 'Não é possível excluir um paciente com agendamentos marcados.',
-            icon: 'error',
-            confirmButtonText: 'OK',
+            icon: 'warning',
+            confirmButtonText: 'Cancelar',
             confirmButtonColor: '#d33',
           });
         }
