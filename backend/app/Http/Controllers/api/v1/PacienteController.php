@@ -16,7 +16,6 @@ class PacienteController extends Controller
 
     public function store(Request $request)
     {
-        // Validação dos campos
         $validated = $request->validate([
             'nome' => 'required|string|max:255',
             'sobrenome' => 'required|string|max:255',
@@ -92,10 +91,9 @@ class PacienteController extends Controller
     public function destroy($id)
     {
         try {
-            // Verifique se o paciente existe
+            
             $paciente = Paciente::findOrFail($id);
 
-            // Verifique se o paciente tem agendamentos vinculados
             $agendamentos = Agendamento::where('id_paciente', $id)->exists();
 
             if ($agendamentos) {
@@ -104,7 +102,6 @@ class PacienteController extends Controller
                 ], 400);
             }
 
-            // Se não houver agendamentos, exclua o paciente
             $paciente->delete();
 
             return response()->json([

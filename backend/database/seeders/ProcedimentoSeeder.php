@@ -32,6 +32,6 @@ class ProcedimentoSeeder extends Seeder
             'objetivo' => 'Reforçar músculos e melhorar a funcionalidade.',
         ]);
 
-        // Adicione mais procedimentos se necessário
+        
     }
 }

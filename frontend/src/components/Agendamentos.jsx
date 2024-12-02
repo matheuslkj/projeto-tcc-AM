@@ -77,7 +77,6 @@ const Agendamentos = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validação de data e hora
         const dataHoraAtual = new Date();
         const dataHoraSelecionada = new Date(`${dataAtendimento}T${horaAtendimento}`);
 

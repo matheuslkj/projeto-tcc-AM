@@ -9,7 +9,6 @@ const Profile = () => {
   const [about, setAbout] = useState('');
   const navigate = useNavigate();
 
-  // Função para buscar os dados do perfil do usuário
   const fetchUserProfile = async () => {
     try {
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -28,12 +27,10 @@ const Profile = () => {
     }
   };
 
-  // Chama a função de buscar perfil ao carregar o componente
   useEffect(() => {
     fetchUserProfile();
   }, []);
 
-  // Função para enviar o formulário de atualização de perfil
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -51,11 +48,9 @@ const Profile = () => {
         },
       });
 
-      // Atualiza o nome no localStorage ou sessionStorage
       localStorage.setItem('userName', name);
       sessionStorage.setItem('userName', name);
 
-      // Exibe alerta de sucesso com Swal
       Swal.fire({
         title: 'Sucesso!',
         text: 'Seu perfil foi atualizado com sucesso.',
@@ -63,14 +58,12 @@ const Profile = () => {
         confirmButtonText: 'OK',
         confirmButtonColor: '#3085d6',
       }).then(() => {
-        // Redireciona para Home e recarrega a página
         navigate('/');
         window.location.reload();
       });
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);
 
-      // Exibe alerta de erro com Swal
       Swal.fire({
         title: 'Erro!',
         text: 'Ocorreu um erro ao salvar o perfil. Verifique os campos e tente novamente.',

@@ -39,7 +39,7 @@ const Pacientes = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [idEditando, setIdEditando] = useState(null);
-  const [isMinor, setIsMinor] = useState(false); // Indica se o paciente é menor de idade
+  const [isMinor, setIsMinor] = useState(false); 
   const [ordenacao, setOrdenacao] = useState({ campo: 'nome', ordem: 'asc' });
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 10;
@@ -61,7 +61,6 @@ const Pacientes = () => {
     }
   };
 
-  // Função para calcular a idade e determinar se é menor de idade
   const calcularIdade = (dataNascimento) => {
     const hoje = new Date();
     const nascimento = new Date(dataNascimento);
@@ -94,7 +93,7 @@ const Pacientes = () => {
     const monthDiff = today.getMonth() - birthDateObj.getMonth();
     const dayDiff = today.getDate() - birthDateObj.getDate();
 
-    // Verifica se é menor de 18 anos
+  
     const isMinor = age < 18 || (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
     setIsMinor(isMinor);
   };
@@ -124,11 +123,9 @@ const Pacientes = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Limpa os CPFs removendo pontos e hífens
     const cpfPaciente = formData.cpf.replace(/\D/g, '');
     const cpfResponsavel = formData.cpfResponsavel.replace(/\D/g, '');
 
-    // Atualiza os dados com os CPFs limpos
     const dataToSend = {
       ...formData,
       cpf: cpfPaciente,
@@ -136,20 +133,17 @@ const Pacientes = () => {
     };
 
     try {
-      // Verifica se os campos do responsável são obrigatórios
       if (isMinor && (!formData.nomeResponsavel || !formData.sobrenomeResponsavel || !formData.cpfResponsavel)) {
         Swal.fire('Erro!', 'Os campos do responsável são obrigatórios para pacientes menores de idade.', 'error');
         return;
       }
 
       if (isEditing) {
-        // Atualiza um paciente existente
         await axios.put(`http://127.0.0.1:8000/api/v1/pacientes/${idEditando}`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
         Swal.fire('Sucesso!', 'Paciente atualizado com sucesso!', 'success');
       } else {
-        // Cadastra um novo paciente
         await axios.post('http://127.0.0.1:8000/api/v1/pacientes', dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -166,11 +160,6 @@ const Pacientes = () => {
     }
   };
 
-
-  // const formDataToSend = {
-  //   ...formData,
-  //   cpf: formData.cpf.replace(/\D/g, '')
-  // };
 
   const limparFormulario = () => {
     setFormData({
@@ -217,14 +206,12 @@ const Pacientes = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Verifica se o paciente possui agendamentos
           const token = localStorage.getItem('token') || sessionStorage.getItem('token');
           const response = await axios.get(`http://127.0.0.1:8000/api/v1/pacientes/${id}/agendamentos`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
           if (response.data.length > 0) {
-            // Paciente possui agendamentos
             Swal.fire({
               title: 'Erro!',
               text: 'Não é possível excluir um paciente com agendamentos marcados.',
@@ -233,13 +220,12 @@ const Pacientes = () => {
               confirmButtonColor: '#d33',
             });
           } else {
-            // Paciente não possui agendamentos, prossegue com a exclusão
             await axios.delete(`http://127.0.0.1:8000/api/v1/pacientes/${id}`, {
               headers: { Authorization: `Bearer ${token}` },
             });
 
             Swal.fire('Excluído!', 'O paciente foi excluído com sucesso.', 'success');
-            fetchPacientes(); // Atualiza a lista de pacientes
+            fetchPacientes();
           }
         } catch (erro) {
           console.error('Erro ao verificar ou excluir paciente:', erro);

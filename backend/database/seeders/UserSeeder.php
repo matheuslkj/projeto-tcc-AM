@@ -24,6 +24,6 @@ class UserSeeder extends Seeder
             'about' => 'Profissional com experiência em reabilitação física.',
         ]);
 
-        // Adicione mais usuários se necessário
+        
     }
 }

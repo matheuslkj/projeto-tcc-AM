@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import ReactPlayer from 'react-player'; // Importando a biblioteca ReactPlayer
+import ReactPlayer from 'react-player'; 
 
 const DetalhesProcedimento = () => {
-  const { id } = useParams(); // Pegamos o ID do procedimento a partir da URL
+  const { id } = useParams(); 
   const [procedimento, setProcedimento] = useState(null);
-  const [isVideoOpen, setIsVideoOpen] = useState(false); // Controle para abrir o vídeo em tela cheia
-  const navigate = useNavigate(); // Para navegar de volta
+  const [isVideoOpen, setIsVideoOpen] = useState(false); 
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const buscarProcedimento = async () => {
@@ -37,12 +37,12 @@ const DetalhesProcedimento = () => {
     let videoId = null;
   
     if (url.includes('youtube.com/watch')) {
-      videoId = url.split('v=')[1]?.split('&')[0];  // Captura o ID do vídeo da URL padrão
+      videoId = url.split('v=')[1]?.split('&')[0];  
     } else if (url.includes('youtu.be')) {
-      videoId = url.split('youtu.be/')[1];  // Captura o ID do vídeo de um link curto
+      videoId = url.split('youtu.be/')[1];  
     }
   
-    if (!videoId) return url; // Retorna o link original se não for um link do YouTube válido
+    if (!videoId) return url; 
   
     const embedLink = `https://www.youtube.com/embed/${videoId}`;
     return embedLink;
@@ -75,17 +75,16 @@ const DetalhesProcedimento = () => {
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-blue-600 mb-2">Vídeo Demonstrativo</h2>
 
-            {/* Vídeo em miniatura */}
             <div 
               className={`relative overflow-hidden rounded-lg shadow-lg transition duration-300 ease-in-out ${isVideoOpen ? 'w-full h-96' : 'w-full h-48 cursor-pointer'}`}
-              onClick={() => setIsVideoOpen(!isVideoOpen)} // Expande o vídeo ao clicar
+              onClick={() => setIsVideoOpen(!isVideoOpen)} 
             >
               <ReactPlayer
                 url={converterLinkYoutube(procedimento.video)}
                 width="100%"
                 height="100%"
                 controls={true}
-                light={!isVideoOpen} // Mostra uma imagem de miniatura até clicar
+                light={!isVideoOpen} 
               />
               {!isVideoOpen && (
                 <div className="absolute inset-0 bg-black bg-opacity-30 flex justify-center items-center">

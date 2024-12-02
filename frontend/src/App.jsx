@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer'; // Certifique-se de importar o Footer
+import Footer from './components/Footer'; 
 import Home from './components/Home';
 import Agendamentos from './components/Agendamentos';
 import Login from './components/Login';
@@ -21,10 +21,10 @@ const App = () => {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Exibir Navbar apenas se a rota atual não estiver em hideNavbarRoutes */}
+  
       {!hideNavbarRoutes.includes(location.pathname) && <Navbar />}
       
-      {/* Conteúdo principal */}
+ 
       <div className="flex-grow">
         <Routes>
           <Route path="/login" element={<Login />} />
@@ -91,7 +91,7 @@ const App = () => {
         </Routes>
       </div>
 
-      {/* Exibir Footer apenas se a rota atual não estiver em hideNavbarRoutes */}
+      
       {!hideNavbarRoutes.includes(location.pathname) && <Footer />}
     </div>
   );

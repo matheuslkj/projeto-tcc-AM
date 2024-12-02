@@ -66,7 +66,6 @@ const Navbar = () => {
 
   return (
     <div>
-      {/* Navbar */}
       <nav className="bg-blue-600 p-4 flex justify-between items-center text-white">
         <button onClick={toggleSidebar} className="text-white text-2xl focus:outline-none">
           <FaBars />
@@ -122,8 +121,6 @@ const Navbar = () => {
           </div>
         </div>
       </nav>
-
-      {/* Sidebar */}
       <div
         ref={sidebarRef}
         className={`fixed top-0 left-0 w-64 h-full bg-gray-800 text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'

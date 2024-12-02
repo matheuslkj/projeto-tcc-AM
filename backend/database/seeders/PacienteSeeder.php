@@ -52,6 +52,5 @@ class PacienteSeeder extends Seeder
             'complemento' => 'Apto 12',
         ]);
 
-        // Adicione mais pacientes, se necessário
     }
 }
