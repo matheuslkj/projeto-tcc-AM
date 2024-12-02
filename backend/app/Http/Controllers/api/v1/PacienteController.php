@@ -41,6 +41,10 @@ class PacienteController extends Controller
         $validated['cpf'] = preg_replace('/\D/', '', $validated['cpf']);
         $validated['data_cadastro'] = now();
 
+        if (!$this->validarCPF($request->cpf)) {
+            return response()->json(['message' => 'CPF inválido.'], 422);
+        }        
+
         $paciente = Paciente::create($validated);
 
         return response()->json($paciente, 201);
@@ -91,7 +95,7 @@ class PacienteController extends Controller
     public function destroy($id)
     {
         try {
-            
+
             $paciente = Paciente::findOrFail($id);
 
             $agendamentos = Agendamento::where('id_paciente', $id)->exists();
@@ -130,4 +134,27 @@ class PacienteController extends Controller
         $agendamentos = $paciente->agendamentos; // Certifique-se de que a relação 'agendamentos' existe no modelo Paciente
         return response()->json($agendamentos);
     }
+
+    private function validarCPF($cpf)
+    {
+        $cpf = preg_replace('/\D/', '', $cpf);
+
+        if (strlen($cpf) != 11 || preg_match('/(\d)\1{10}/', $cpf)) {
+            return false;
+        }
+
+        for ($t = 9; $t < 11; $t++) {
+            $d = 0;
+            for ($c = 0; $c < $t; $c++) {
+                $d += $cpf[$c] * (($t + 1) - $c);
+            }
+            $d = ((10 * $d) % 11) % 10;
+            if ($cpf[$c] != $d) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 }

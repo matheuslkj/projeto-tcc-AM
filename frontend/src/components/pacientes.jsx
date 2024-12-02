@@ -39,7 +39,7 @@ const Pacientes = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [idEditando, setIdEditando] = useState(null);
-  const [isMinor, setIsMinor] = useState(false); 
+  const [isMinor, setIsMinor] = useState(false);
   const [ordenacao, setOrdenacao] = useState({ campo: 'nome', ordem: 'asc' });
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 10;
@@ -93,7 +93,7 @@ const Pacientes = () => {
     const monthDiff = today.getMonth() - birthDateObj.getMonth();
     const dayDiff = today.getDate() - birthDateObj.getDate();
 
-  
+
     const isMinor = age < 18 || (age === 18 && (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)));
     setIsMinor(isMinor);
   };
@@ -122,22 +122,22 @@ const Pacientes = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    if (!validarCPF(formData.cpf)) {
+      Swal.fire('ATENÇÃO', 'CPF inválido. Verifique o CPF e tente novamente.', 'warning');
+      return;
+    }
+  
     const cpfPaciente = formData.cpf.replace(/\D/g, '');
     const cpfResponsavel = formData.cpfResponsavel.replace(/\D/g, '');
-
+  
     const dataToSend = {
       ...formData,
       cpf: cpfPaciente,
       cpfResponsavel: cpfResponsavel,
     };
-
+  
     try {
-      if (isMinor && (!formData.nomeResponsavel || !formData.sobrenomeResponsavel || !formData.cpfResponsavel)) {
-        Swal.fire('Erro!', 'Os campos do responsável são obrigatórios para pacientes menores de idade.', 'error');
-        return;
-      }
-
       if (isEditing) {
         await axios.put(`http://127.0.0.1:8000/api/v1/pacientes/${idEditando}`, dataToSend, {
           headers: { Authorization: `Bearer ${token}` },
@@ -149,16 +149,20 @@ const Pacientes = () => {
         });
         Swal.fire('Sucesso!', 'Novo paciente cadastrado com sucesso!', 'success');
       }
-
+  
       setShowModal(false);
       fetchPacientes();
       limparFormulario();
       setIsEditing(false);
     } catch (erro) {
-      console.error('Erro ao salvar paciente:', erro.response?.data);
-      Swal.fire('Erro!', 'Ocorreu um erro ao salvar o paciente.', 'error');
+      if (erro.response?.data?.errors?.email) {
+        Swal.fire('ATENÇÃO', 'O e-mail já está em uso.', 'warning');
+      } else {
+        Swal.fire('Erro!', 'Ocorreu um erro ao salvar o paciente.', 'error');
+      }
     }
   };
+  
 
 
   const limparFormulario = () => {
@@ -258,6 +262,27 @@ const Pacientes = () => {
   const totalPaginas = Math.ceil(
     pacientes.filter((p) => p.nome.toLowerCase().includes(busca.toLowerCase())).length / itensPorPagina
   );
+
+  const validarCPF = (cpf) => {
+    cpf = cpf.replace(/\D/g, "");
+
+    if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
+
+    const calcularDigito = (base) => {
+      let soma = 0;
+      for (let i = 0; i < base; i++) {
+        soma += parseInt(cpf[i]) * (base + 1 - i);
+      }
+      const resto = (soma * 10) % 11;
+      return resto === 10 ? 0 : resto;
+    };
+
+    const digito1 = calcularDigito(9);
+    const digito2 = calcularDigito(10);
+
+    return digito1 === parseInt(cpf[9]) && digito2 === parseInt(cpf[10]);
+  };
+
 
   const handlePaginaClick = (numeroPagina) => {
     setPaginaAtual(numeroPagina);
