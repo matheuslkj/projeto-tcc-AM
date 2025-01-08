@@ -164,7 +164,6 @@ const Pacientes = () => {
   };
   
 
-
   const limparFormulario = () => {
     setFormData({
       nome: '',
